@@ -166,6 +166,9 @@ public class CMain {
 				}
 				CGraph graph=new CGraph();
 				graph.Read(graphFilename);
+				//
+				//graph = RandomGraph(4,19);
+				//
 				if (!salir) {
 					m_View = new CGraphView();
 					m_View.ShowGraph(graph);					
