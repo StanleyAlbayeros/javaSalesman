@@ -162,10 +162,11 @@ public class CGraph {
     	double maxValue = 9999999; 	//lo utilizo para inicializar las dijkstraDistance de los vertex a un valor elevado 
     								//y para inicializar la distancia minima de la lista de hijos de cada vertice
 
-   		CVertex vertTemp;
+   		CVertex nextVertex;
 		double minDist;
-		int numVertex = this.nVertices(); //numero de vertices
-  	    
+		int numGrafVertexes = this.nVertices(); //numero de vertices
+  	    int numVisitedVertexes = 0;
+		
 		//Inicializamos todos los vertices del grafo a una distancia de dijkstra elevada
    		for (CVertex vert : this.m_Vertices) {
 		    vert.m_DijkstraDistance = maxValue;
@@ -178,10 +179,13 @@ public class CGraph {
 		
 		// ? porque no va sin esto???
    		CVertex currentVertex = FindVertex(start.m_Point.m_X, start.m_Point.m_Y);
-   		
+   		nextVertex = currentVertex;
 		///comenzara bucle con cola/pila
-		minDist = maxValue;
 		
+		
+		while (numVisitedVertexes < numGrafVertexes)
+		{
+			minDist = maxValue;
 		////comienza bucle, falta iterador entre todos los vertex
 			for (CVertex lookupVertex : currentVertex.m_Neighbords)
 				{			
@@ -207,11 +211,14 @@ public class CGraph {
 					if (distToCurrent < minDist )
 						{
 							minDist = lookupVertex.m_DijkstraDistance ;
-							vertTemp = lookupVertex;						
+							nextVertex = lookupVertex;
+							numVisitedVertexes++;
 						}
 //				}
 				}
-			
+			currentVertex.m_DijkstraVisit = true;
+			currentVertex = nextVertex;
+		}
 			
 		////termina bucle, falta iterador entre todos los vertex
 			
@@ -227,7 +234,7 @@ public class CGraph {
     	// IMPLEMENTAR LA FUNCION
     	// IMPLEMENTAR LA FUNCION
     	
-    	throw new Exception("Dijkstra no implementado");
+    	//throw new Exception("Dijkstra no implementado");
     }
     // DijkstraQueue -------------------------------------------------------------------
     public void DijkstraQueue(CVertex start) throws Exception {
