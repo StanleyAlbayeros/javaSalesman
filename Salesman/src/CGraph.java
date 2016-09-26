@@ -224,8 +224,8 @@ public class CGraph {
 				// en distancia de dijkstra del punto, se pone la calculada
 
 				if (distToCurrent <= lookupVertex.m_DijkstraDistance) {
+					
 					lookupVertex.m_DijkstraDistance = distToCurrent;
-
 					lookupVertex.m_DijkstraPrevious = currentVertex;
 					
 					if (!lookupVertex.m_DijkstraVisit) {
