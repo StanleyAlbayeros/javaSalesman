@@ -210,6 +210,7 @@ public class CGraph {
 
 		CVertex currentVertex = start;
 		bestVertex = currentVertex;
+
 		/// comenzara bucle con cola/pila
 
 		while (numVisitedVertexes < numGrafVertexes) {
