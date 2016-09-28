@@ -90,6 +90,12 @@ public class CGraph {
 			int x1 = (int) Math.round(p1.m_Point.m_X * esc);
 			int y1 = (int) Math.round(p1.m_Point.m_Y * esc);
 			g.fillOval(x1 - 4, y1 - 4, 9, 9);
+			//This writes the node number next to each node.
+			g.setFont(new Font("SansSerif",Font.BOLD,14));
+			g.setColor(new Color(255,64,0));
+			String vertexNum = Integer.toString(i);
+			p1.m_VertexID = i;
+			g.drawString(vertexNum,x1+15,y1);
 		}
 	}
 
@@ -156,7 +162,8 @@ public class CGraph {
 		System.out.print("DISTANCES ");
 		for (int i = 0; i < m_Vertices.size(); ++i) {
 			CVertex v = m_Vertices.get(i);
-			System.out.print(i + ":" + v.m_DijkstraDistance + " ");
+			CVertex previousVertex = v.m_DijkstraPrevious;
+			System.out.print(i + ":" + v.m_DijkstraDistance + " Last vertex: " + previousVertex.m_VertexID + "\n");
 		}
 		System.out.println();
 	}
@@ -214,11 +221,12 @@ public class CGraph {
 
 		while (numVisitedVertexes < numGrafVertexes) {
 			
+			double distToCurrent;
 			
-			//// comienza bucle, falta iterador entre todos los vertex
+			//// com ienza bucle, falta iterador entre todos los vertex
 			for (CVertex lookupVertex : currentVertex.m_Neighbords) {
 
-				double distToCurrent = lookupVertex.m_Point.Distance(currentVertex.m_Point) + currentVertex.m_DijkstraDistance;
+				distToCurrent = lookupVertex.m_Point.Distance(currentVertex.m_Point) + currentVertex.m_DijkstraDistance;
 
 				// Si la distancia calculada es menor que la distancia guardada
 				// en distancia de dijkstra del punto, se pone la calculada
@@ -227,10 +235,7 @@ public class CGraph {
 					
 					lookupVertex.m_DijkstraDistance = distToCurrent;
 					lookupVertex.m_DijkstraPrevious = currentVertex;
-					
-					if (!lookupVertex.m_DijkstraVisit) {
-
-					}
+				
 				}
 
 				// Si la distancia es menor que la minima en el grupo de

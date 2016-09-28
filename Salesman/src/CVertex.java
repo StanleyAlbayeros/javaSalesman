@@ -7,6 +7,8 @@ public class CVertex {
 	public double m_DijkstraDistance;
 	public boolean m_DijkstraVisit;	
 	public CVertex m_DijkstraPrevious;
+	////
+	public int m_VertexID;
 	
 	// Campos para el algoritmo de backtracking
 	public boolean m_VertexToVisit; // Vertice a visitar (en lista visits)
