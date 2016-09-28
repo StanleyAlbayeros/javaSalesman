@@ -163,7 +163,7 @@ public class CGraph {
 		for (int i = 0; i < m_Vertices.size(); ++i) {
 			CVertex v = m_Vertices.get(i);
 			CVertex previousVertex = v.m_DijkstraPrevious;
-			System.out.print(i + ":" + v.m_DijkstraDistance + " Last vertex: " + previousVertex.m_VertexID + "\n");
+			System.out.print(i + ":" + v.m_DijkstraDistance /*+ " Last vertex: " + previousVertex.m_VertexID */+ "\n");
 		}
 		System.out.println();
 	}
@@ -220,10 +220,11 @@ public class CGraph {
 
 		/// comenzara bucle con cola/pila
 
-		while (numVisitedVertexes < numGrafVertexes) {
+		while (numVisitedVertexes <= numGrafVertexes) {
 			
 			double distToCurrent;
-			
+			currentVertex.m_DijkstraVisit = true;
+
 			//// com ienza bucle, falta iterador entre todos los vertex
 			for (CVertex lookupVertex : currentVertex.m_Neighbords) {
 
@@ -234,22 +235,26 @@ public class CGraph {
 
 				if (distToCurrent <= lookupVertex.m_DijkstraDistance) {
 					
+					System.out.print("lookupVertex old DIST: " + lookupVertex.m_DijkstraDistance);
 					lookupVertex.m_DijkstraDistance = distToCurrent;
 					lookupVertex.m_DijkstraPrevious = currentVertex;
+					System.out.print(" lookupVertex new DIST: " + lookupVertex.m_DijkstraDistance + "\n");
+
 				
 				}
 
 				// Si la distancia es menor que la minima en el grupo de
 				// neighbors, se asigna la min dist
-				if (distToCurrent <= minDist) {
+				if ( (distToCurrent <= minDist) && !lookupVertex.m_DijkstraVisit ) {
 					minDist = lookupVertex.m_DijkstraDistance;
-					bestVertex = lookupVertex;
-					numVisitedVertexes++;
+					bestVertex = lookupVertex;					
 				}
 
 			}
-			currentVertex.m_DijkstraVisit = true;
+			
+			numVisitedVertexes++;
 			currentVertex = bestVertex;
+
 			minDist = maxValue;
 		}
 
