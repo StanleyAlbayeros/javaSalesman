@@ -199,7 +199,8 @@ public class CGraph {
 									// la lista de hijos de cada vertice
 
 		CVertex bestVertex;			// para el mejor vertex por vuelta del bucle mas interno
-		double minDist = maxValue;				// lo mismo
+		LinkedList<CVertex> vertexQ = new LinkedList<CVertex>();
+		double minDist = maxValue;
 		int numGrafVertexes = this.nVertices(); // numero de vertices del grafo
 		int numVisitedVertexes = 0;				// numero de vertices que he visitado desde inicio de dijkstra
 
@@ -217,13 +218,27 @@ public class CGraph {
 
 		CVertex currentVertex = start;
 		bestVertex = currentVertex;
+		//
+		//
+		//
+		//
+		//
+		//
+		vertexQ.add(currentVertex);
+		//
+		//
+		// we can't instantiate a queue instance because it's an interface
+		//
+		//
+		//
+		//
 
+		
 		/// comenzara bucle con cola/pila
 
-		while (numVisitedVertexes <= numGrafVertexes) {
+		while ( currentVertex != null /*numVisitedVertexes <= numGrafVertexes*/ ) {
 			
 			double distToCurrent;
-			currentVertex.m_DijkstraVisit = true;
 
 			//// com ienza bucle, falta iterador entre todos los vertex
 			for (CVertex lookupVertex : currentVertex.m_Neighbords) {
@@ -233,7 +248,7 @@ public class CGraph {
 				// Si la distancia calculada es menor que la distancia guardada
 				// en distancia de dijkstra del punto, se pone la calculada
 
-				if (distToCurrent <= lookupVertex.m_DijkstraDistance) {
+				if (distToCurrent < lookupVertex.m_DijkstraDistance) {
 					
 					System.out.print("lookupVertex old DIST: " + lookupVertex.m_DijkstraDistance);
 					lookupVertex.m_DijkstraDistance = distToCurrent;
@@ -243,20 +258,32 @@ public class CGraph {
 				
 				}
 
+				
 				// Si la distancia es menor que la minima en el grupo de
 				// neighbors, se asigna la min dist
-				if ( (distToCurrent <= minDist) && !lookupVertex.m_DijkstraVisit ) {
+				if (/* (distToCurrent < minDist) && */!lookupVertex.m_DijkstraVisit ) {
+					
+					/*
 					minDist = lookupVertex.m_DijkstraDistance;
-					bestVertex = lookupVertex;					
+					bestVertex = lookupVertex;	
+					*/
+					
+					vertexQ.offer(lookupVertex);
+					
 				}
 
 			}
-			
-			numVisitedVertexes++;
-			currentVertex = bestVertex;
+						currentVertex.m_DijkstraVisit = true;
 
-			minDist = maxValue;
+			//numVisitedVertexes++;
+			currentVertex = vertexQ.pollLast();
+
+			//minDist = maxValue;
+				
+				
 		}
+
+	}
 
 		//// termina bucle, falta iterador entre todos los vertex
 
@@ -265,7 +292,7 @@ public class CGraph {
 		// es el siguiente "current".
 
 		// throw new Exception("Dijkstra no implementado");
-	}
+
 
 	// DijkstraQueue
 	// -------------------------------------------------------------------
