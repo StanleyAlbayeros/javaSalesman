@@ -162,7 +162,6 @@ public class CGraph {
 		System.out.print("DISTANCES ");
 		for (int i = 0; i < m_Vertices.size(); ++i) {
 			CVertex v = m_Vertices.get(i);
-			CVertex previousVertex = v.m_DijkstraPrevious;
 			System.out.print(i + ":" + v.m_DijkstraDistance /*+ " Last vertex: " + previousVertex.m_VertexID */+ "\n");
 		}
 		System.out.println();
@@ -262,13 +261,9 @@ public class CGraph {
 		// y para inicializar la distancia minima de
 		// la lista de hijos de cada vertice
 
-		CVertex bestVertex; // para el mejor vertex por vuelta del bucle mas
-							// interno
-		LinkedList<CVertex> vertexQ = new LinkedList<CVertex>();
-		double minDist = maxValue;
-		int numGrafVertexes = this.nVertices(); // numero de vertices del grafo
-		int numVisitedVertexes = 0; // numero de vertices que he visitado desde
-									// inicio de dijkstra
+		// interno
+		Comparator<CVertex> vertexCompare = new VertexCompare();
+		PriorityQueue<CVertex> vertexQ = new PriorityQueue<CVertex>(vertexCompare);
 
 		// Inicializamos todos los vertices del grafo a una distancia de
 		// dijkstra elevada
@@ -283,65 +278,34 @@ public class CGraph {
 		start.m_DijkstraVisit = true;
 
 		CVertex currentVertex = start;
-		bestVertex = currentVertex;
-		//
-		//
-		//
-		//
-		//
-		//
 		vertexQ.add(currentVertex);
-		//
-		//
-		// we can't instantiate a queue instance because it's an interface
-		//
-		//
-		//
-		//
 
 		/// comenzara bucle con cola/pila
 
-		while (currentVertex != null /* numVisitedVertexes <= numGrafVertexes */ ) {
+		while ( currentVertex != null ) {
 
 			double distToCurrent;
 
 			//// com ienza bucle, falta iterador entre todos los vertex
 			for (CVertex lookupVertex : currentVertex.m_Neighbords) {
-
 				distToCurrent = lookupVertex.m_Point.Distance(currentVertex.m_Point) + currentVertex.m_DijkstraDistance;
-
 				// Si la distancia calculada es menor que la distancia guardada
 				// en distancia de dijkstra del punto, se pone la calculada
 
 				if (distToCurrent < lookupVertex.m_DijkstraDistance) {
-
 					System.out.print("lookupVertex old DIST: " + lookupVertex.m_DijkstraDistance);
 					lookupVertex.m_DijkstraDistance = distToCurrent;
 					lookupVertex.m_DijkstraPrevious = currentVertex;
 					System.out.print(" lookupVertex new DIST: " + lookupVertex.m_DijkstraDistance + "\n");
-
 				}
-
 				// Si la distancia es menor que la minima en el grupo de
 				// neighbors, se asigna la min dist
-				if (/* (distToCurrent < minDist) && */!lookupVertex.m_DijkstraVisit) {
-
-					/*
-					 * minDist = lookupVertex.m_DijkstraDistance; bestVertex =
-					 * lookupVertex;
-					 */
-
+				if (!lookupVertex.m_DijkstraVisit) {
 					vertexQ.offer(lookupVertex);
-
 				}
-
 			}
-
 			currentVertex.m_DijkstraVisit = true;
-			currentVertex = vertexQ.pollLast();
-
-			// minDist = maxValue;
-
+			currentVertex = vertexQ.poll();
 		}
 
 	}
