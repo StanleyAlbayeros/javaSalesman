@@ -159,7 +159,7 @@ public class CGraph {
 
 	// Compare dijkstra --------------------------------------------------------------------
 	public void CompareDijkstra(String filename) throws Exception {
-		Clear();
+		System.out.println();
 		File f = new File(filename);
 		Scanner s = new Scanner(f);
 		int failures=0;
@@ -167,8 +167,10 @@ public class CGraph {
 			String str = s.nextLine();
 			if (!str.equalsIgnoreCase("DISTANCES"))
 				throw new Exception(filename + " no tiene formato de fichero de distancias (" + str + ")");
-			// leer v�rtices
-			for (int i = 0; i < m_Vertices.size(); i++){				
+
+			
+			double tmp1 = m_Vertices.size();
+			for (int i = 0; i < tmp1; i++){				
 				CVertex v = m_Vertices.get(i);
 				String linea = s.nextLine();
 				Scanner sc = new Scanner(linea);
