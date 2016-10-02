@@ -142,8 +142,7 @@ public class CMain {
 	static void PrintRandomAnalysis(String filename, int numGrafs) throws Exception
 	{
 		
-	    String COMMA_DELIMITER = ",";
-	    
+	    String COMMA_DELIMITER = ",";	    
 	    String FILE_HEADER = "Vertex,Edge,Dijkstra,DijkstraPriority";
 	    
 	    PrintWriter writer;
@@ -152,38 +151,43 @@ public class CMain {
 			writer.println(FILE_HEADER);
 			
 			for (int i = 0; i < numGrafs; i++) {
-				int j = i + 1;
-
+				int j = i+1;
 				long t0, t1, t2, t3;
 				int randomVertex, randomEdges;
-				int max = i*2;
-				int min = i;
-				randomVertex = (int) (i + Math.random() * (max-min));
-				randomEdges= (int) (randomVertex * Math.random() * (2- 1));
+				
+				Random rand1 = new Random();
+				Random rand2 = new Random();
+
+				randomVertex = rand1.nextInt(1000) + 10;
+
+				randomEdges = rand2.nextInt((randomVertex*(randomVertex-1))/2) + randomVertex-1;
 				
 				CGraph graph = RandomGraph(randomVertex,randomEdges);
 				
-				// dijkstra				
+				// dijkstra	
+				System.out.println("Starting dijkstra on randomgraph " + j );
 				System.gc();
 				t0 = System.nanoTime();
 				graph.Dijkstra(graph.m_Vertices.get(0));
 				t1 = System.nanoTime();
 				double tempD1 = (t1 - t0) / 1e9;
-				
+
 				// dijkstraqueue
+				System.out.println("Starting dijkstraqueue on randomgraph " + j );
 				System.gc();
 				t2 = System.nanoTime();
 				graph.DijkstraQueue(graph.m_Vertices.get(0));
 				t3 = System.nanoTime();
 				double tempD2 = (t3 - t2) / 1e9;
-				double tempDiff = tempD2 - tempD1;
 
 				// print
 				//System.out.println("Dijkstra " + j + " time: " + tempD1 + " DijkstraQueue " + j + " time: " + tempD2 + " Time difference: " + tempDiff);
 				writer.println(randomVertex + COMMA_DELIMITER + randomEdges + COMMA_DELIMITER + tempD1 + COMMA_DELIMITER + tempD2);
-			} 
+			}
 
 			writer.close();
+			System.out.println("Random analysis done, file created");
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
@@ -320,7 +324,7 @@ public class CMain {
 						String analysisName = "analisis";
 						StringBuilder analysisN = new StringBuilder(0);
 						analysisN.append(analysisName);
-						analysisN.append(".csv");
+						analysisN.append(".txt");
 						
 						PrintRandomAnalysis(analysisN.toString(), numRuns);
 						
