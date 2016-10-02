@@ -155,18 +155,21 @@ public class CMain {
 			String algorihtm=args[0];
 			if (algorihtm.toLowerCase().equals("dijkstra") || algorihtm.toLowerCase().equals("dijkstraqueue")) {
 				String graphFilename=args[1];
+				
 				System.out.println("Fichero de grafo: " + graphFilename);
 				System.out.println("Algoritmo: " + algorihtm);
 				if (args.length==3) {
+					
+					
 					if (args[2].toLowerCase().equals("salir")) salir=true;
 					else {
 						System.out.println("Uso: fichero algoritmo grafo [visitas] [salir]");
-						return;
+						//return;
 					}
 				}
 				CGraph graph=new CGraph();
 				graph.Read(graphFilename);
-				
+				String graphDistanceFilename=args[2];
 				//
 				//graph = RandomGraph(10,19);
 				//
@@ -189,8 +192,11 @@ public class CMain {
 					t1=System.nanoTime();
 				}
 				else throw new Exception(algorihtm + " no es un algoritmo v�lido");
-				graph.PrintDistances();
+				
+				//graph.PrintDistances();
 				System.out.println("Time: " + (t1-t0)/1e9);
+				graph.CompareDijkstra(graphDistanceFilename);
+				
 				if (salir) {
 					System.exit(0);
 				}

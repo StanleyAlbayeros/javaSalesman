@@ -72,6 +72,7 @@ public class CVisits {
     	}
     	bw.close();
     }
+    
     public void Read(String filename) throws Exception {
     	Clear();
 		File f=new File(filename);

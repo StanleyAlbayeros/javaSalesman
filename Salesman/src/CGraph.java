@@ -157,6 +157,35 @@ public class CGraph {
 		}
 	}
 
+	// Compare dijkstra --------------------------------------------------------------------
+	public void CompareDijkstra(String filename) throws Exception {
+		Clear();
+		File f = new File(filename);
+		Scanner s = new Scanner(f);
+		int failures=0;
+		try {
+			String str = s.nextLine();
+			if (!str.equalsIgnoreCase("DISTANCES"))
+				throw new Exception(filename + " no tiene formato de fichero de distancias (" + str + ")");
+			// leer v�rtices
+			for (int i = 0; i < m_Vertices.size(); i++){				
+				CVertex v = m_Vertices.get(i);
+				String linea = s.nextLine();
+				Scanner sc = new Scanner(linea);
+				sc.useLocale(Locale.US);
+				double txtdistance = sc.nextDouble();
+				double currentdistance = v.m_DijkstraDistance;
+				if (txtdistance != currentdistance){
+					failures++;
+				}
+				sc.close();	
+			}		
+		} finally {
+			s.close();
+		}
+		System.out.println("Fallos: " + failures);
+	}
+	
 	// PrintDistances ----------------------------------------------------------
 	public void PrintDistances() throws Exception {
 		System.out.print("DISTANCES ");
@@ -166,7 +195,7 @@ public class CGraph {
 		}
 		System.out.println();
 	}
-
+	
 	// WriteDistances ----------------------------------------------------------
 	public void WriteDistances(String filename) throws Exception {
 		File f = new File(filename);
@@ -178,6 +207,7 @@ public class CGraph {
 		}
 		bw.close();
 	}
+	
 	// Dijkstra
 	// -------------------------------------------------------------------
 
@@ -217,20 +247,22 @@ public class CGraph {
 					System.out.print("lookupVertex old DIST: " + lookupVertex.m_DijkstraDistance);
 					lookupVertex.m_DijkstraDistance = distToCurrent;
 					lookupVertex.m_DijkstraPrevious = currentVertex;
-					System.out.print(" lookupVertex new DIST: " + lookupVertex.m_DijkstraDistance + "\n");
+					lookupVertex.m_DijkstraVisit = false;
+					System.out.print(" lookupVertex new DIST: " + lookupVertex.m_DijkstraDistance + "\n");					
+					if ( !lookupVertex.m_DijkstraVisit ) {			
+						vertexQ.add(lookupVertex);	
+						minDist=distToCurrent;
+					}
 				}
+			}	
 
-				if ( !lookupVertex.m_DijkstraVisit ) {			
-					vertexQ.add(lookupVertex);	
-					minDist=distToCurrent;
-				}
-			}			
-			currentVertex.m_DijkstraVisit = true;			
+			currentVertex.m_DijkstraVisit = true;
 			//iterar sobre vertexq para encontrar dijkstra dstance minima			
 			currentVertex = vertexQ.pollFirst();
 		}
-	}
+		
 
+	}
 
 	// DijkstraQueue
 	// -------------------------------------------------------------------
@@ -261,10 +293,10 @@ public class CGraph {
 				distToCurrent = lookupVertex.m_Point.Distance(currentVertex.m_Point) + currentVertex.m_DijkstraDistance;
 
 				if (distToCurrent < lookupVertex.m_DijkstraDistance) {
-					System.out.print("lookupVertex old DIST: " + lookupVertex.m_DijkstraDistance);
+					//System.out.print("lookupVertex old DIST: " + lookupVertex.m_DijkstraDistance);
 					lookupVertex.m_DijkstraDistance = distToCurrent;
 					lookupVertex.m_DijkstraPrevious = currentVertex;
-					System.out.print(" lookupVertex new DIST: " + lookupVertex.m_DijkstraDistance + "\n");
+					//System.out.print(" lookupVertex new DIST: " + lookupVertex.m_DijkstraDistance + "\n");
 				}
 
 				if (!lookupVertex.m_DijkstraVisit) {
@@ -274,7 +306,7 @@ public class CGraph {
 			currentVertex.m_DijkstraVisit = true;
 			currentVertex = vertexQ.poll();
 		}
-
+		
 	}
 
 	// SalesmanTrackGreedy
