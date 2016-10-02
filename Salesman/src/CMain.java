@@ -71,6 +71,7 @@ public class CMain {
 		}
 		return g;
 	}
+	
 	// RamdomVisits ------------------------------------------------------------
 	public static CVisits RandomVisits(CGraph g,int nVisits) throws Exception 
 	{
