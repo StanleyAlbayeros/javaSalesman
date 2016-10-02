@@ -69,8 +69,7 @@ public class CGraph {
 		for (int i = 0; i < m_Vertices.size(); ++i)
 			n = n + m_Vertices.get(i).m_Neighbords.size();
 		return n / 2;
-	}
-
+	}    
 	// Draw --------------------------------------------------------------------
 	public void Draw(Graphics g, double esc) {
 
@@ -262,6 +261,7 @@ public class CGraph {
 			for (CVertex lookupVertex : vertexQ){
 				if ( (lookupVertex.m_DijkstraDistance <= minDist) ){
 					minDistVertex = lookupVertex;
+					minDist = minDistVertex.m_DijkstraDistance;
 				}
 			}
 			currentVertex.m_DijkstraVisit = true;
@@ -314,7 +314,7 @@ public class CGraph {
 			currentVertex.m_DijkstraVisit = true;
 			currentVertex = vertexQ.poll();
 		}
-		System.out.println("\t\t\tdone dijkstraqueue");
+		//System.out.println("\t\t\tdone dijkstraqueue");
 
 		
 	}

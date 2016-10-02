@@ -152,11 +152,11 @@ public class CMain {
 			writer.println(FILE_HEADER);
 			
 			for (int i = 1; i <= numGrafs; i++) {
-				int j = i+1;
+				int j = i;
 				long t0, t1, t2, t3;
 				int numVertex, numEdges;
 				
-				numVertex = i*10;
+				numVertex = i*5;
 				numEdges = (numVertex*(numVertex-2))/4;
 				System.out.println("Iteration: " + j + " Vertex number: " + numVertex + " Edge number: " + numEdges);
 
@@ -211,6 +211,8 @@ public class CMain {
 		System.out.println(NIAAlumno2);
 		System.out.println(NombreAlumno2);
 		System.out.println(ApellidosAlumno2);
+
+		boolean testSeries = true;
 		
 		if (!NIACorrecto(NIAAlumno1)) throw new Exception("El NIA " + NIAAlumno1 + " no es de alumno matriculado");
 		if (!NIAAlumno2.isEmpty() && !NIACorrecto(NIAAlumno2)) throw new Exception("El NIA " + NIAAlumno2 + " no es de alumno matriculado");
@@ -221,7 +223,6 @@ public class CMain {
 		}
 		
 		boolean salir=false;
-		boolean testSeries = true;
 		try {			
 			String algorihtm=args[0];
 			if (algorihtm.toLowerCase().equals("dijkstra") || algorihtm.toLowerCase().equals("dijkstraqueue")) {
