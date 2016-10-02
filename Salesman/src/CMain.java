@@ -150,22 +150,23 @@ public class CMain {
 			writer = new PrintWriter(filename, "UTF-8");
 			writer.println(FILE_HEADER);
 			
-			for (int i = 0; i < numGrafs; i++) {
+			for (int i = 1; i <= numGrafs; i++) {
 				int j = i+1;
 				long t0, t1, t2, t3;
-				int randomVertex, randomEdges;
+				int numVertex, numEdges;
 				
-				Random rand1 = new Random();
-				Random rand2 = new Random();
+				numVertex = i*10;
+				numEdges = (numVertex*(numVertex-2))/4;
+				System.out.println("Iteration: " + j + " Vertex number: " + numVertex + " Edge number: " + numEdges);
 
-				randomVertex = rand1.nextInt(1000) + 10;
+				CGraph graph = RandomGraph(numVertex,numEdges);
+				System.out.println("\t Graph " + j + " Created");
+			    java.util.Date date = new java.util.Date();
+			    System.out.println(date);
 
-				randomEdges = rand2.nextInt((randomVertex*(randomVertex-1))/2) + randomVertex-1;
-				
-				CGraph graph = RandomGraph(randomVertex,randomEdges);
 				
 				// dijkstra	
-				System.out.println("Starting dijkstra on randomgraph " + j );
+				System.out.println("\t\tStarting dijkstra on randomgraph " + j );
 				System.gc();
 				t0 = System.nanoTime();
 				graph.Dijkstra(graph.m_Vertices.get(0));
@@ -173,7 +174,7 @@ public class CMain {
 				double tempD1 = (t1 - t0) / 1e9;
 
 				// dijkstraqueue
-				System.out.println("Starting dijkstraqueue on randomgraph " + j );
+				System.out.println("\t\tStarting dijkstraqueue on randomgraph " + j );
 				System.gc();
 				t2 = System.nanoTime();
 				graph.DijkstraQueue(graph.m_Vertices.get(0));
@@ -182,7 +183,8 @@ public class CMain {
 
 				// print
 				//System.out.println("Dijkstra " + j + " time: " + tempD1 + " DijkstraQueue " + j + " time: " + tempD2 + " Time difference: " + tempDiff);
-				writer.println(randomVertex + COMMA_DELIMITER + randomEdges + COMMA_DELIMITER + tempD1 + COMMA_DELIMITER + tempD2);
+				writer.println(numVertex + COMMA_DELIMITER + numEdges + COMMA_DELIMITER + tempD1 + COMMA_DELIMITER + tempD2);
+				System.out.println();
 			}
 
 			writer.close();
@@ -320,8 +322,8 @@ public class CMain {
 						} 
 					}
 					if (generateAnalysis){
-						int numRuns = 100;
-						String analysisName = "analisis";
+						int numRuns = 200;
+						String analysisName = "analisis3";
 						StringBuilder analysisN = new StringBuilder(0);
 						analysisN.append(analysisName);
 						analysisN.append(".txt");

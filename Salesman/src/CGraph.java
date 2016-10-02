@@ -302,17 +302,20 @@ public class CGraph {
 					//System.out.print("lookupVertex old DIST: " + lookupVertex.m_DijkstraDistance);
 					lookupVertex.m_DijkstraDistance = distToCurrent;
 					lookupVertex.m_DijkstraPrevious = currentVertex;
-					//System.out.print(" lookupVertex new DIST: " + lookupVertex.m_DijkstraDistance + "\n");
+//					System.out.print(" lookupVertex new DIST: " + lookupVertex.m_DijkstraDistance + "\n");
 					if (!lookupVertex.m_DijkstraVisit) {
 					vertexQ.offer(lookupVertex);
 					}
 				}
+				//System.out.print(" .");
 
 				
 			}
 			currentVertex.m_DijkstraVisit = true;
 			currentVertex = vertexQ.poll();
 		}
+		System.out.println("\t\t\tdone dijkstraqueue");
+
 		
 	}
 
