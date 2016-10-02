@@ -158,7 +158,12 @@ public class CGraph {
 	}
 
 	// Compare dijkstra --------------------------------------------------------------------
-	public void CompareDijkstra(String filename) throws Exception {
+	/** CompareDijkstra compares this graph's m_vertex list of distances with a file
+	 * 
+	 * @param filename file to read
+	 * @throws Exception the file was not found
+	 */
+	public int CompareDijkstra(String filename) throws Exception {
 		System.out.println();
 		File f = new File(filename);
 		Scanner s = new Scanner(f);
@@ -166,9 +171,7 @@ public class CGraph {
 		try {
 			String str = s.nextLine();
 			if (!str.equalsIgnoreCase("DISTANCES"))
-				throw new Exception(filename + " no tiene formato de fichero de distancias (" + str + ")");
-
-			
+				throw new Exception(filename + " no tiene formato de fichero de distancias (" + str + ")");			
 			double tmp1 = m_Vertices.size();
 			for (int i = 0; i < tmp1; i++){				
 				CVertex v = m_Vertices.get(i);
@@ -185,7 +188,8 @@ public class CGraph {
 		} finally {
 			s.close();
 		}
-		System.out.println("Fallos: " + failures);
+//		System.out.println("Errors: " + failures);
+		return failures;
 	}
 	
 	// PrintDistances ----------------------------------------------------------
@@ -237,33 +241,33 @@ public class CGraph {
 		start.m_DijkstraDistance = 0;
 		start.m_DijkstraVisit = true;
 		CVertex currentVertex = start;
-//		vertexQ.add(currentVertex);
+		vertexQ.add(currentVertex);
 		
-		while ( currentVertex != null ) {
+		while ( vertexQ.peek() != null ) {
 			double minDist = maxValue;
 			double distToCurrent;
 			for (CVertex lookupVertex : currentVertex.m_Neighbords) {
 				distToCurrent = lookupVertex.m_Point.Distance(currentVertex.m_Point) + currentVertex.m_DijkstraDistance;
 
 				if (distToCurrent < lookupVertex.m_DijkstraDistance) {					
-					System.out.print("lookupVertex old DIST: " + lookupVertex.m_DijkstraDistance);
+					//System.out.print("lookupVertex old DIST: " + lookupVertex.m_DijkstraDistance);
 					lookupVertex.m_DijkstraDistance = distToCurrent;
 					lookupVertex.m_DijkstraPrevious = currentVertex;
 					lookupVertex.m_DijkstraVisit = false;
-					System.out.print(" lookupVertex new DIST: " + lookupVertex.m_DijkstraDistance + "\n");					
-					if ( !lookupVertex.m_DijkstraVisit ) {			
-						vertexQ.add(lookupVertex);	
-						minDist=distToCurrent;
-					}
+					//System.out.print(" lookupVertex new DIST: " + lookupVertex.m_DijkstraDistance + "\n");		
+					vertexQ.add(lookupVertex);	
+				}				
+			}			
+			CVertex minDistVertex = currentVertex;
+			for (CVertex lookupVertex : vertexQ){
+				if ( (lookupVertex.m_DijkstraDistance <= minDist) ){
+					minDistVertex = lookupVertex;
 				}
-			}	
-
+			}
 			currentVertex.m_DijkstraVisit = true;
-			//iterar sobre vertexq para encontrar dijkstra dstance minima			
-			currentVertex = vertexQ.pollFirst();
+			currentVertex = minDistVertex;
+			vertexQ.remove(minDistVertex);
 		}
-		
-
 	}
 
 	// DijkstraQueue
@@ -299,11 +303,12 @@ public class CGraph {
 					lookupVertex.m_DijkstraDistance = distToCurrent;
 					lookupVertex.m_DijkstraPrevious = currentVertex;
 					//System.out.print(" lookupVertex new DIST: " + lookupVertex.m_DijkstraDistance + "\n");
+					if (!lookupVertex.m_DijkstraVisit) {
+					vertexQ.offer(lookupVertex);
+					}
 				}
 
-				if (!lookupVertex.m_DijkstraVisit) {
-					vertexQ.offer(lookupVertex);
-				}
+				
 			}
 			currentVertex.m_DijkstraVisit = true;
 			currentVertex = vertexQ.poll();
