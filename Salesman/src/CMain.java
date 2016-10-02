@@ -324,7 +324,7 @@ public class CMain {
 						} 
 					}
 					if (generateAnalysis){
-						int numRuns = 200;
+						int numRuns = 100;
 						String analysisName = "analisis3";
 						StringBuilder analysisN = new StringBuilder(0);
 						analysisN.append(analysisName);
