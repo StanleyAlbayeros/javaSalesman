@@ -212,7 +212,7 @@ public class CMain {
 		System.out.println(NombreAlumno2);
 		System.out.println(ApellidosAlumno2);
 
-		boolean testSeries = true;
+		boolean testSeries = false;
 		
 		if (!NIACorrecto(NIAAlumno1)) throw new Exception("El NIA " + NIAAlumno1 + " no es de alumno matriculado");
 		if (!NIAAlumno2.isEmpty() && !NIACorrecto(NIAAlumno2)) throw new Exception("El NIA " + NIAAlumno2 + " no es de alumno matriculado");
@@ -235,7 +235,7 @@ public class CMain {
 					
 					if (args[3].toLowerCase().equals("salir")) salir=true;
 					else {
-						System.out.println("Uso: fichero algoritmo grafo [visitas] [salir]");
+						System.out.println("Uso: fichero algoritmo grafo [distanciasX.txt/visitasX.txt] [salir]");
 						//return;
 					}
 				}

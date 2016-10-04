@@ -257,6 +257,7 @@ public class CGraph {
 					vertexQ.add(lookupVertex);	
 				}				
 			}			
+
 			CVertex minDistVertex = currentVertex;
 			for (CVertex lookupVertex : vertexQ){
 				if ( (lookupVertex.m_DijkstraDistance <= minDist) ){
@@ -299,7 +300,7 @@ public class CGraph {
 				distToCurrent = lookupVertex.m_Point.Distance(currentVertex.m_Point) + currentVertex.m_DijkstraDistance;
 
 				if (distToCurrent < lookupVertex.m_DijkstraDistance) {
-					//System.out.print("lookupVertex old DIST: " + lookupVertex.m_DijkstraDistance);
+//					System.out.print("lookupVertex old DIST: " + lookupVertex.m_DijkstraDistance);
 					lookupVertex.m_DijkstraDistance = distToCurrent;
 					lookupVertex.m_DijkstraPrevious = currentVertex;
 //					System.out.print(" lookupVertex new DIST: " + lookupVertex.m_DijkstraDistance + "\n");
@@ -308,6 +309,7 @@ public class CGraph {
 					}
 				}
 				//System.out.print(" .");
+				
 
 				
 			}
