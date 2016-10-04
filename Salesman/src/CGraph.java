@@ -411,26 +411,38 @@ public class CGraph {
 		CVertex lastVertex = visitList.getLast();
 		CVertex currentVertex = visitList.getFirst();
 		//resultTrack.AddFirst( visitList.getFirst());
-		
+		boolean finish = false ;
 		while (currentVertex!=null){			
 			
 			Comparator<CTrack> trackCompare = new TrackCompare();
 			PriorityQueue<CTrack> trackQ = new PriorityQueue<CTrack>(trackCompare);
 			ListIterator<CVertex> vertexIterator = visitList.listIterator();
 			
+			if (visitList.size() == 1 ){
+					CTrack tmpTrack = getTrackGreedy(currentVertex, lastVertex);
+					finish = true ;				
+					resultTrack.Append(tmpTrack);
+			}
+			
 			for (CVertex nextVertex : visitList){
 				CTrack tmpTrack = getTrackGreedy(currentVertex, nextVertex);
-				if (nextVertex != lastVertex){
-					if (tmpTrack != null){				
+				if (tmpTrack != null){
+					if (nextVertex != lastVertex){				
 						trackQ.offer(getTrackGreedy(currentVertex,nextVertex));
 					}
+					
+
 				}
 			}
 			CTrack bestTrack = trackQ.poll();
-			
-			if (bestTrack != null){
+			if (finish){
+				return resultTrack;
+			} else if (!finish){
+				if (bestTrack != null){
 				resultTrack.Append(bestTrack);
 				currentVertex = bestTrack.m_Vertices.getLast();
+				visitList.remove(currentVertex);
+				}
 			}
 			
 			//TODO
@@ -443,12 +455,13 @@ public class CGraph {
 	}
 	
 	public CTrack getTrackGreedy(CVertex start, CVertex last) throws Exception{
-		
+		CTrack tempTrack = new CTrack(this);
 		if (start == last){
-			return null;
+			tempTrack.AddFirst(start);
+			return tempTrack;
 		}
 		
-		CTrack tempTrack = new CTrack(this);
+		
 		this.DijkstraQueue(start);
 		CVertex tmpVertex = last;
 		
