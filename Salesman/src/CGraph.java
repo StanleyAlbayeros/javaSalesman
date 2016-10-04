@@ -344,8 +344,37 @@ public class CGraph {
 	// SalesmanTrackBacktrackingGreedy
 	// -----------------------------------------------------
 	public CTrack SalesmanTrackBacktrackingGreedy(CVisits visits) throws Exception {
-		// IMPLEMENTAR LA FUNCION
-		throw new Exception("SalesmanTrackBacktrackingGreedy no implementado");
+		
+		CTrack result = new CTrack(this);
+		
+		LinkedList<CVertex> visitList = visits.toCVertexList(this);
+				
+		int i = 0;
+		
+		for (CVertex currentStart : visitList) {
+			CTrack tempResult = new CTrack(this);				
+
+			//if (currentStart != visitList.getLast()) {
+				System.out.print(currentStart.m_DijkstraDistance + " start distancia");
+
+				CVertex nextVertex = visitList.get(i + 1);
+				
+				this.DijkstraQueue(currentStart);							
+				
+				while (nextVertex.m_DijkstraPrevious != currentStart) {
+					CVertex step = nextVertex.m_DijkstraPrevious;
+					System.out.print(nextVertex.m_DijkstraDistance + " distancia");
+					tempResult.AddLast(step);
+					nextVertex = nextVertex.m_DijkstraPrevious;
+				//}
+				
+				i++;
+			}
+			result.Append(tempResult);
+		}
+		
+		return result;
+		
 	}
 
 	// =====================================================================================

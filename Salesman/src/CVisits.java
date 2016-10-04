@@ -28,6 +28,22 @@ public class CVisits {
 	public void Clear() {
 		m_Points.clear();
 	}
+	public LinkedList<CVertex> toCVertexList(CGraph graph) {
+		
+		LinkedList<CVertex> result = new LinkedList<CVertex>();
+		
+		for (CPoint currentPoint : m_Points){
+			
+			try {
+				result.add(graph.GetVertex(currentPoint));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}			
+		}
+		
+		return result;	
+	}
+	
 	// Draw --------------------------------------------------------------------
 	public void Draw(Graphics g,double esc) {
 		boolean start=true;
@@ -107,4 +123,5 @@ public class CVisits {
 		}		
 		return str+ "]";
     }
+
 }

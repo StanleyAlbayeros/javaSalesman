@@ -212,7 +212,7 @@ public class CMain {
 		System.out.println(NombreAlumno2);
 		System.out.println(ApellidosAlumno2);
 
-		boolean testSeries = true;
+		boolean testSeries = false;
 		
 		if (!NIACorrecto(NIAAlumno1)) throw new Exception("El NIA " + NIAAlumno1 + " no es de alumno matriculado");
 		if (!NIAAlumno2.isEmpty() && !NIACorrecto(NIAAlumno2)) throw new Exception("El NIA " + NIAAlumno2 + " no es de alumno matriculado");
@@ -268,11 +268,11 @@ public class CMain {
 					}
 					else throw new Exception(algorihtm + " no es un algoritmo v�lido");
 					
-					//graph.PrintDistances();
+					graph.PrintDistances();
 					System.out.println("Time: " + (t1-t0)/1e9);
 					int errors = graph.CompareDijkstra(graphDistanceFilename);
 
-					System.out.println("Errors: " + errors);
+					//System.out.println("Errors: " + errors);
 					
 					if (salir) {
 						System.exit(0);
