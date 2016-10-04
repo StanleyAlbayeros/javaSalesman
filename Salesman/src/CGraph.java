@@ -94,7 +94,7 @@ public class CGraph {
 			g.setColor(new Color(255,64,0));
 			String vertexNum = Integer.toString(i);
 			p1.m_VertexID = i;
-			g.drawString(vertexNum,x1+15,y1);
+			//g.drawString(vertexNum,x1+15,y1);
 		}
 	}
 
@@ -345,35 +345,60 @@ public class CGraph {
 	// -----------------------------------------------------
 	public CTrack SalesmanTrackBacktrackingGreedy(CVisits visits) throws Exception {
 		
-		CTrack result = new CTrack(this);
+		CTrack resultTrack = new CTrack(this);
 		
 		LinkedList<CVertex> visitList = visits.toCVertexList(this);
 				
-		int i = 0;
+		int i = 1;
 		
-		for (CVertex currentStart : visitList) {
-			CTrack tempResult = new CTrack(this);				
-
-			//if (currentStart != visitList.getLast()) {
-				System.out.print(currentStart.m_DijkstraDistance + " start distancia");
-
-				CVertex nextVertex = visitList.get(i + 1);
-				
-				this.DijkstraQueue(currentStart);							
-				
-				while (nextVertex.m_DijkstraPrevious != currentStart) {
-					CVertex step = nextVertex.m_DijkstraPrevious;
-					System.out.print(nextVertex.m_DijkstraDistance + " distancia");
-					tempResult.AddLast(step);
-					nextVertex = nextVertex.m_DijkstraPrevious;
-				//}
-				
-				i++;
+//		for (CVertex currentStart : visitList) {
+//			
+//			CTrack tempResult = new CTrack(this);		
+//			
+//			System.out.print(currentStart.m_DijkstraDistance + " start distancia\n");
+//			if (i<(visitList.size()-1)){
+//				CVertex nextVertex = visitList.get(i);
+//				this.DijkstraQueue(currentStart);							
+//			
+//				while (nextVertex.m_DijkstraPrevious != currentStart) {
+//					CVertex step = nextVertex.m_DijkstraPrevious;
+//					System.out.print(nextVertex.m_DijkstraDistance + " distancia\n");
+//					tempResult.AddLast(step);
+//					nextVertex = step.m_DijkstraPrevious;
+//				}
+//			 
+//			}
+//			else {
+//				CVertex nextVertex = visitList.getLast();
+//				this.DijkstraQueue(currentStart);
+//				tempResult.AddLast(nextVertex.m_DijkstraPrevious);				
+//			}
+//				
+//			i++;
+//			result.Append(tempResult);
+//		}
+		CVertex currentVertex = visitList.pollFirst();
+		CVertex nextVertex = visitList.pollFirst();
+		resultTrack.AddFirst(currentVertex);
+		while(nextVertex != null){
+			
+			resultTrack.AddLast(nextVertex);
+			CTrack tempTrack = new CTrack(this);
+			this.DijkstraQueue(currentVertex);
+			CVertex tmpVertex = nextVertex;
+			
+			while (tmpVertex.m_DijkstraPrevious != currentVertex){
+				tmpVertex = tmpVertex.m_DijkstraPrevious;
+				tempTrack.AddLast(tmpVertex);
 			}
-			result.Append(tempResult);
+			
+			resultTrack.Append(tempTrack);
+			currentVertex = nextVertex;
+			nextVertex = visitList.pollFirst();
+			i++;
 		}
 		
-		return result;
+		return resultTrack;
 		
 	}
 
