@@ -140,6 +140,13 @@ public class CMain {
 		}
 	}
 	
+	/** Generates an analysis in the form of a comma-separated text file
+	 * @param filename The filename of the result
+	 * @param numGrafs Number of graphs you want to generate.
+	 * The number of vertex on each graph depends on how many graphs you generate.
+	 * it will do numGraf graphs of i*5 vertex on each iteration, starting at i=1.
+	 * @throws Exception
+	 */
 	static void PrintRandomAnalysis(String filename, int numGrafs) throws Exception
 	{
 		

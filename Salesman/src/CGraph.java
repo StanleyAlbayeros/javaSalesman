@@ -299,7 +299,7 @@ public class CGraph {
 				distToCurrent = lookupVertex.m_Point.Distance(currentVertex.m_Point) + currentVertex.m_DijkstraDistance;
 
 				if (distToCurrent < lookupVertex.m_DijkstraDistance) {
-					//System.out.print("lookupVertex old DIST: " + lookupVertex.m_DijkstraDistance);
+//					System.out.print("lookupVertex old DIST: " + lookupVertex.m_DijkstraDistance);
 					lookupVertex.m_DijkstraDistance = distToCurrent;
 					lookupVertex.m_DijkstraPrevious = currentVertex;
 //					System.out.print(" lookupVertex new DIST: " + lookupVertex.m_DijkstraDistance + "\n");
@@ -348,9 +348,7 @@ public class CGraph {
 		CTrack resultTrack = new CTrack(this);
 		
 		LinkedList<CVertex> visitList = visits.toCVertexList(this);
-				
-		int i = 1;
-		
+//		Ugly code, nevermind this. Keeping it for future reference.
 //		for (CVertex currentStart : visitList) {
 //			
 //			CTrack tempResult = new CTrack(this);		
@@ -377,29 +375,29 @@ public class CGraph {
 //			i++;
 //			result.Append(tempResult);
 //		}
+		
 		CVertex currentVertex = visitList.pollFirst();
 		CVertex nextVertex = visitList.pollFirst();
+		CVertex lastVertex = visitList.getLast();
+		
 		resultTrack.AddFirst(currentVertex);
-		while(nextVertex != null){
-			
-			resultTrack.AddLast(nextVertex);
+		while(nextVertex != null){						
 			CTrack tempTrack = new CTrack(this);
-			this.DijkstraQueue(currentVertex);
+			this.DijkstraQueue(currentVertex);			
 			CVertex tmpVertex = nextVertex;
+		
+			tempTrack.AddFirst(tmpVertex);
 			
 			while (tmpVertex.m_DijkstraPrevious != currentVertex){
 				tmpVertex = tmpVertex.m_DijkstraPrevious;
-				tempTrack.AddLast(tmpVertex);
-			}
-			
+				tempTrack.AddFirst(tmpVertex);
+			}			
+
 			resultTrack.Append(tempTrack);
 			currentVertex = nextVertex;
 			nextVertex = visitList.pollFirst();
-			i++;
-		}
-		
-		return resultTrack;
-		
+		}		
+		return resultTrack;		
 	}
 
 	// =====================================================================================

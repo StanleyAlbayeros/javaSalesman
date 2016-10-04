@@ -28,6 +28,11 @@ public class CVisits {
 	public void Clear() {
 		m_Points.clear();
 	}
+	
+	/** Returns a linkedlist containing all the visits vertex
+	 * @param graph CGraph which contains the vertex, used to check if they are actually in it
+	 * @return a linked list with all the vertex
+	 */
 	public LinkedList<CVertex> toCVertexList(CGraph graph) {
 		
 		LinkedList<CVertex> result = new LinkedList<CVertex>();
