@@ -345,8 +345,7 @@ public class CGraph {
 	// -----------------------------------------------------
 	public CTrack SalesmanTrackBacktrackingGreedy(CVisits visits) throws Exception {
 		
-		CTrack resultTrack = new CTrack(this);
-		
+		CTrack resultTrack = new CTrack(this);		
 		LinkedList<CVertex> visitList = visits.toCVertexList(this);
 //		Ugly code, nevermind this. Keeping it for future reference.
 //		for (CVertex currentStart : visitList) {
@@ -375,29 +374,91 @@ public class CGraph {
 //			i++;
 //			result.Append(tempResult);
 //		}
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////		
 		
-		CVertex currentVertex = visitList.pollFirst();
-		CVertex nextVertex = visitList.pollFirst();
+//		CVertex currentVertex = visitList.pollFirst();
+//		CVertex nextVertex = visitList.pollFirst();
+//		CVertex lastVertex = visitList.getLast();
+//		
+//		resultTrack.AddFirst(currentVertex);
+//		while(nextVertex != null){						
+//			CTrack tempTrack = new CTrack(this);
+//			this.DijkstraQueue(currentVertex);			
+//			CVertex tmpVertex = nextVertex;
+//		
+//			tempTrack.AddFirst(tmpVertex);
+//			
+//			while (tmpVertex.m_DijkstraPrevious != currentVertex){
+//				tmpVertex = tmpVertex.m_DijkstraPrevious;
+//				tempTrack.AddFirst(tmpVertex);
+//			}			
+//
+//			resultTrack.Append(tempTrack);
+//			currentVertex = nextVertex;
+//			nextVertex = visitList.pollFirst();
+//		}
+		
+///////////////////////////////////////////////////////////////////////////////////////		
+///////////////////////////////////////////////////////////////////////////////////////		
+///////////////////////////////////////////////////////////////////////////////////////		
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////		
+		
 		CVertex lastVertex = visitList.getLast();
+		CVertex currentVertex = visitList.getFirst();
+		//resultTrack.AddFirst( visitList.getFirst());
 		
-		resultTrack.AddFirst(currentVertex);
-		while(nextVertex != null){						
-			CTrack tempTrack = new CTrack(this);
-			this.DijkstraQueue(currentVertex);			
-			CVertex tmpVertex = nextVertex;
-		
-			tempTrack.AddFirst(tmpVertex);
+		while (currentVertex!=null){			
 			
-			while (tmpVertex.m_DijkstraPrevious != currentVertex){
-				tmpVertex = tmpVertex.m_DijkstraPrevious;
-				tempTrack.AddFirst(tmpVertex);
-			}			
+			Comparator<CTrack> trackCompare = new TrackCompare();
+			PriorityQueue<CTrack> trackQ = new PriorityQueue<CTrack>(trackCompare);
+			ListIterator<CVertex> vertexIterator = visitList.listIterator();
+			
+			for (CVertex nextVertex : visitList){
+				CTrack tmpTrack = getTrackGreedy(currentVertex, nextVertex);
+				if (nextVertex != lastVertex){
+					if (tmpTrack != null){				
+						trackQ.offer(getTrackGreedy(currentVertex,nextVertex));
+					}
+				}
+			}
+			CTrack bestTrack = trackQ.poll();
+			
+			if (bestTrack != null){
+				resultTrack.Append(bestTrack);
+				currentVertex = bestTrack.m_Vertices.getLast();
+			}
+			
+			//TODO
+			
+		}
 
-			resultTrack.Append(tempTrack);
-			currentVertex = nextVertex;
-			nextVertex = visitList.pollFirst();
-		}		
+		
+		
 		return resultTrack;		
+	}
+	
+	public CTrack getTrackGreedy(CVertex start, CVertex last) throws Exception{
+		
+		if (start == last){
+			return null;
+		}
+		
+		CTrack tempTrack = new CTrack(this);
+		this.DijkstraQueue(start);
+		CVertex tmpVertex = last;
+		
+		tempTrack.AddFirst(tmpVertex);
+		while (tmpVertex.m_DijkstraPrevious != start){
+			tmpVertex = tmpVertex.m_DijkstraPrevious;
+			tempTrack.AddFirst(tmpVertex);
+		}
+		
+		return tempTrack;
 	}
 
 	// =====================================================================================
