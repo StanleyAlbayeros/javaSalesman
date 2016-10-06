@@ -413,13 +413,18 @@ public class CGraph {
 		//resultTrack.AddFirst( visitList.getFirst());
 		boolean finish = false ;
 		
+		Comparator<CTrack> resultCompare = new TrackCompare();
+		PriorityQueue<CTrack> resultTQ = new PriorityQueue<CTrack>(resultCompare);
+		Comparator<CTrack> tmpTComparator = new TrackCompare();
+		PriorityQueue<CTrack> tmpTQ = new PriorityQueue<CTrack>(tmpTComparator);
+		
 		while (currentVertex!=null){			
 			
-			Comparator<CTrack> tmpTComparator = new TrackCompare();
-			PriorityQueue<CTrack> tmpTQ = new PriorityQueue<CTrack>(tmpTComparator);
-			Comparator<CTrack> resultCompare = new TrackCompare();
-			PriorityQueue<CTrack> resultTQ = new PriorityQueue<CTrack>(resultCompare);
+
+
 			ListIterator<CVertex> vertexIterator = visitList.listIterator();
+			
+			System.out.println("kekek\n");
 			
 
 			if (currentVertex == lastVertex){
@@ -432,7 +437,7 @@ public class CGraph {
 			}
 			
 			CTrack bestTrack = tmpTQ.poll();
-			if (finish){
+			if (finish && bestTrack!=null){
 				resultTrack.Append(bestTrack);
 				return resultTrack;
 				
@@ -450,7 +455,6 @@ public class CGraph {
 						resultTQ.offer(bestTrack);
 						currentVertex = bestTrack.m_Vertices.getLast();
 						visitList.remove(currentVertex);
-						tmpTQ.clear();
 					}
 					if (badPath){
 						bestTrack = resultTQ.poll();
