@@ -412,39 +412,56 @@ public class CGraph {
 		CVertex currentVertex = visitList.getFirst();
 		//resultTrack.AddFirst( visitList.getFirst());
 		boolean finish = false ;
+		
 		while (currentVertex!=null){			
 			
-			Comparator<CTrack> trackCompare = new TrackCompare();
-			PriorityQueue<CTrack> trackQ = new PriorityQueue<CTrack>(trackCompare);
+			Comparator<CTrack> tmpTComparator = new TrackCompare();
+			PriorityQueue<CTrack> tmpTQ = new PriorityQueue<CTrack>(tmpTComparator);
+			Comparator<CTrack> resultCompare = new TrackCompare();
+			PriorityQueue<CTrack> resultTQ = new PriorityQueue<CTrack>(resultCompare);
 			ListIterator<CVertex> vertexIterator = visitList.listIterator();
 			
-			if (visitList.size() == 1 ){
-					CTrack tmpTrack = getTrackGreedy(currentVertex, lastVertex);
-					finish = true ;				
-					resultTrack.Append(tmpTrack);
+
+			if (currentVertex == lastVertex){
+				finish = true;
 			}
 			
 			for (CVertex nextVertex : visitList){
 				CTrack tmpTrack = getTrackGreedy(currentVertex, nextVertex);
-				if (tmpTrack != null){
-					if (nextVertex != lastVertex){				
-						trackQ.offer(getTrackGreedy(currentVertex,nextVertex));
-					}
-					
-
-				}
+				tmpTQ.offer(getTrackGreedy(currentVertex,nextVertex));
 			}
-			CTrack bestTrack = trackQ.poll();
+			
+			CTrack bestTrack = tmpTQ.poll();
 			if (finish){
+				resultTrack.Append(bestTrack);
 				return resultTrack;
+				
 			} else if (!finish){
 				if (bestTrack != null){
-				resultTrack.Append(bestTrack);
-				currentVertex = bestTrack.m_Vertices.getLast();
-				visitList.remove(currentVertex);
+					boolean badPath = false;
+					
+					for (CVertex iter : bestTrack.m_Vertices){
+						if (resultTrack.m_Vertices.contains(iter)){
+							badPath = true;
+						}
+					}
+					
+					if (!badPath){
+						resultTQ.offer(bestTrack);
+						currentVertex = bestTrack.m_Vertices.getLast();
+						visitList.remove(currentVertex);
+						tmpTQ.clear();
+					}
+					if (badPath){
+						bestTrack = resultTQ.poll();
+						currentVertex = bestTrack.m_Vertices.getLast();
+						visitList.remove(currentVertex);
+						tmpTQ.clear();
+					}
 				}
 			}
 			
+			resultTrack.Append(bestTrack);
 			//TODO
 			
 		}
