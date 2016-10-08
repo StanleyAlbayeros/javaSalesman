@@ -380,34 +380,33 @@ public class CGraph {
 ///////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////		
 		
-//		CVertex currentVertex = visitList.pollFirst();
-//		CVertex nextVertex = visitList.pollFirst();
-//		CVertex lastVertex = visitList.getLast();
-//		
-//		resultTrack.AddFirst(currentVertex);
-//		while(nextVertex != null){						
-//			CTrack tempTrack = new CTrack(this);
-//			this.DijkstraQueue(currentVertex);			
-//			CVertex tmpVertex = nextVertex;
-//		
-//			tempTrack.AddFirst(tmpVertex);
-//			
-//			while (tmpVertex.m_DijkstraPrevious != currentVertex){
-//				tmpVertex = tmpVertex.m_DijkstraPrevious;
-//				tempTrack.AddFirst(tmpVertex);
-//			}			
-//
-//			resultTrack.Append(tempTrack);
-//			currentVertex = nextVertex;
-//			nextVertex = visitList.pollFirst();
-//		}
+		CVertex currentVertex = visitList.pollFirst();
+		CVertex nextVertex = visitList.pollFirst();
+		CVertex lastVertex = visitList.getLast();
+		
+		resultTrack.AddFirst(currentVertex);
+		while(nextVertex != null){						
+			CTrack tempTrack = new CTrack(this);
+			this.DijkstraQueue(currentVertex);
+		
+			tempTrack=getDijkstraTrack(currentVertex,nextVertex);
+			
+//			for (CVertex tmp : visitList){
+//				tempTrack = getDijkstraTrack(currentVertex,tmp);
+//			}
+
+			resultTrack.Append(tempTrack);
+			currentVertex = nextVertex;
+			nextVertex = visitList.pollFirst();
+		}
 		
 ///////////////////////////////////////////////////////////////////////////////////////		
 ///////////////////////////////////////////////////////////////////////////////////////		
 ///////////////////////////////////////////////////////////////////////////////////////		
 ///////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////		
-		
+
+		/*
 		CVertex lastVertex = visitList.getLast();
 		CVertex currentVertex = visitList.getFirst();
 		//resultTrack.AddFirst( visitList.getFirst());
@@ -424,7 +423,7 @@ public class CGraph {
 
 			ListIterator<CVertex> vertexIterator = visitList.listIterator();
 			
-			System.out.println("kekek\n");
+			System.out.println("kek\n");
 			
 
 			if (currentVertex == lastVertex){
@@ -432,8 +431,8 @@ public class CGraph {
 			}
 			
 			for (CVertex nextVertex : visitList){
-				CTrack tmpTrack = getTrackGreedy(currentVertex, nextVertex);
-				tmpTQ.offer(getTrackGreedy(currentVertex,nextVertex));
+				CTrack tmpTrack = getDijkstraTrack(currentVertex, nextVertex);
+				tmpTQ.offer(tmpTrack);
 			}
 			
 			CTrack bestTrack = tmpTQ.poll();
@@ -452,7 +451,7 @@ public class CGraph {
 					}
 					
 					if (!badPath){
-						resultTQ.offer(bestTrack);
+//						resultTQ.offer(bestTrack.AppendBefore(t);
 						currentVertex = bestTrack.m_Vertices.getLast();
 						visitList.remove(currentVertex);
 					}
@@ -466,16 +465,25 @@ public class CGraph {
 			}
 			
 			resultTrack.Append(bestTrack);
-			//TODO
+			//
+			
+			//start
+				//getdijkstratrack desde current a todo visits excepto last
+					//if newtrack.length <= mintrack.length
+						
+			//guarda el track
+				//current.m_VertexToVisit = true
+				//current = 	
+					
 			
 		}
-
+*/
 		
 		
 		return resultTrack;		
 	}
 	
-	public CTrack getTrackGreedy(CVertex start, CVertex last) throws Exception{
+	public CTrack getDijkstraTrack(CVertex start, CVertex last) throws Exception{
 		CTrack tempTrack = new CTrack(this);
 		if (start == last){
 			tempTrack.AddFirst(start);
