@@ -149,10 +149,10 @@ public class CTrack {
 		s.useLocale(Locale.US);
 		try {
 			if (!s.nextLine().equalsIgnoreCase("TRACK")) throw new Exception(filename + " no tiene formato de fichero de camino");
-			// leer v�rtices
+			//leer v�rtices
 			while (s.hasNextLine()) {
 				String linea = s.nextLine();
-				//System.out.println(linea);
+//				System.out.println(linea);
 				Scanner sl = new Scanner(linea);
 				sl.useLocale(Locale.US);
 				double x=sl.nextDouble();
@@ -167,11 +167,7 @@ public class CTrack {
 		}
     }
     
-    public boolean Compare(CTrack track1, CTrack track2){
-    	
-    	
-    	return false;
-    }
+
     // Print -------------------------------------------------------------------
     public String toString() {
     	String str="[";
@@ -197,4 +193,13 @@ public class CTrack {
     	}
 		return l;
     }
+	public String Compare(CTrack track2) {
+		for (int i = 0; i < m_Vertices.size(); i++) {
+			
+			if (m_Vertices.get(i)!=track2.m_Vertices.get(i)){
+				return "error\n";
+			}
+		}
+	return "equal\n";
+	}
 }

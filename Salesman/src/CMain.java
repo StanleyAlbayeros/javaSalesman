@@ -363,12 +363,15 @@ public class CMain {
 					m_View.ShowVisits(visits);
 				}
 				CTrack track;
+				CTrack track2 = new CTrack(graph);
+				
 				long t0,t1;
 				if (algorihtm.toLowerCase().equals("greedy")) {
 					System.gc();
 					t0=System.nanoTime();
 					track=graph.SalesmanTrackGreedy(visits);
 					t1=System.nanoTime();
+					
 				}
 				else if (algorihtm.toLowerCase().equals("backtracking")) {
 					System.gc();
@@ -381,6 +384,10 @@ public class CMain {
 					t0=System.nanoTime();
 					track=graph.SalesmanTrackBacktrackingGreedy(visits);
 					t1=System.nanoTime();
+
+					String str = graphFilename.replaceAll("\\D+","");
+					track2.Read("Tests/TrackGreedy"+str+".txt");
+
 				}
 				else if (algorihtm.toLowerCase().equals("branchandbound1")) {
 					System.gc();
@@ -406,8 +413,12 @@ public class CMain {
 					m_View.ShowVisits(visits);
 				}
 				System.out.println("Track: " + track);
+				System.out.println("Track2: " + track2);
 				System.out.println("Longitud: " + track.Length());
 				System.out.println("Time: " + (t1-t0)/1e9);
+
+				String lol = track.Compare(track2);
+				System.out.println(lol);
 			}
 		}
 		catch (Exception ex) {			

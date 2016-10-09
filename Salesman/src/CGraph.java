@@ -386,6 +386,7 @@ public class CGraph {
 		
 		CVertex currentVertex = visitList.pollFirst();
 		CVertex nextVertex = visitList.peekFirst();
+		CVertex lastVertex = visitList.peekLast();
 		
 		resultTrack.AddFirst(currentVertex);
 		
@@ -397,13 +398,10 @@ public class CGraph {
 			this.DijkstraQueue(currentVertex);
 
 			for (CVertex temp : visitList){
-				if (temp.m_DijkstraDistance <= nextVertex.m_DijkstraDistance){
+				if ((temp!=lastVertex) && (temp.m_DijkstraDistance <= nextVertex.m_DijkstraDistance)){
 					nextVertex = temp;
 				}
-			}			
-			
-			
-
+			}
 		
 			tempTrack=getDijkstraTrack(currentVertex,nextVertex);
 			
