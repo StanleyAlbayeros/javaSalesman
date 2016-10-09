@@ -333,8 +333,15 @@ public class CGraph {
 	// SalesmanTrackBacktracking
 	// -----------------------------------------------------------------
 	public CTrack SalesmanTrackBacktracking(CVisits visits) throws Exception {
-		// IMPLEMENTAR LA FUNCION
-		throw new Exception("SalesmanTrackBacktracking no implementado");
+//TODO
+		CTrack resultTrack = new CTrack(this);		
+		LinkedList<CVertex> visitList = visits.toCVertexList(this);
+		LinkedList<CVertex> tempVisitList = visits.toCVertexList(this);
+		
+		
+		
+		return resultTrack;
+		
 	}
 
 	// =====================================================================================
@@ -517,14 +524,12 @@ public class CGraph {
 	}
 	
 	public CTrack getDijkstraTrack(CVertex start, CVertex last) throws Exception{
+		
 		CTrack tempTrack = new CTrack(this);
 		if (start == last){
 			tempTrack.AddFirst(start);
 			return tempTrack;
 		}
-		
-		
-		//this.DijkstraQueue(start);
 		CVertex tmpVertex = last;
 		
 		tempTrack.AddFirst(tmpVertex);
@@ -532,8 +537,7 @@ public class CGraph {
 			tmpVertex.m_VertexToVisit = false;
 			tmpVertex = tmpVertex.m_DijkstraPrevious;
 			tempTrack.AddFirst(tmpVertex);
-		}
-		
+		}		
 		return tempTrack;
 	}
 
