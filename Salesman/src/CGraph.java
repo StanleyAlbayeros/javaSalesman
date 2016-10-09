@@ -196,7 +196,7 @@ public class CGraph {
 		System.out.print("DISTANCES ");
 		for (int i = 0; i < m_Vertices.size(); ++i) {
 			CVertex v = m_Vertices.get(i);
-			System.out.print(i + ":" + v.m_DijkstraDistance /*+ " Last vertex: " + previousVertex.m_VertexID */+ "\n");
+			System.out.print(i + ":" + v.m_DijkstraDistance /*+ " Last vertex: " + previousVertex.m_VertexID */+ " ");
 		}
 		System.out.println();
 	}
@@ -343,10 +343,20 @@ public class CGraph {
 	// =====================================================================================
 	// SalesmanTrackBacktrackingGreedy
 	// -----------------------------------------------------
+	/**Implements the Backtracking algorithm with the greedy modifier. 
+	 *
+	 *We search through a graph, given a visits list, the optimal route between a starting and
+	 *an ending node that visits all vertex in the list. We use the dijkstrapriorityqueue method 
+	 *to select the "best" vertex to visit next
+	 * @param visits contains the vertex we need to visit.
+	 * @return CTrack object with the optimal track.
+	 * @throws Exception
+	 */
 	public CTrack SalesmanTrackBacktrackingGreedy(CVisits visits) throws Exception {
 		
 		CTrack resultTrack = new CTrack(this);		
 		LinkedList<CVertex> visitList = visits.toCVertexList(this);
+		
 //		Ugly code, nevermind this. Keeping it for future reference.
 //		for (CVertex currentStart : visitList) {
 //			
@@ -425,7 +435,7 @@ public class CGraph {
 		
 ///////////////////////////////////////////////////////////////////////////////////////		
 ///////////////////////////////////////////////////////////////////////////////////////		
-///////////////////////////////////////////////////////////////////////////////////////		
+/////////////////////////more ugly code, don't look////////////////////////////////////		
 ///////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////		
 
