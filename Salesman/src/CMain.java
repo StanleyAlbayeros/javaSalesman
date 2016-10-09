@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 
 
 public class CMain {
+	
 	static final boolean testDijkstra = false;
 	static final boolean testDijkstraTests = false;
 	static final boolean generateRandomDijkstra = false;
