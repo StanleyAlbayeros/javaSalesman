@@ -196,7 +196,7 @@ public class CGraph {
 		System.out.print("DISTANCES ");
 		for (int i = 0; i < m_Vertices.size(); ++i) {
 			CVertex v = m_Vertices.get(i);
-			System.out.print(i + ":" + v.m_DijkstraDistance /*+ " Last vertex: " + previousVertex.m_VertexID */+ " ");
+			System.out.print(i + ":" + v.m_DijkstraDistance + " ");
 		}
 		System.out.println();
 	}

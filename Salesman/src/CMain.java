@@ -2,7 +2,14 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
+
+
 public class CMain {
+	static final boolean testDijkstra = false;
+	static final boolean testDijkstraTests = false;
+	static final boolean generateRandomDijkstra = false;
+	static final boolean autoAlgorithmTest = false;
+	
 	static CGraphView m_View;
 	// Rellenar con los datos de los dos alumnos que presentan la pr�ctica
 	static String NombreAlumno1="Vernon";
@@ -135,7 +142,69 @@ public class CMain {
 			ex.printStackTrace(System.out);
 		}
 	}
-	
+	/** Dijkstra test suite
+	 * @throws Exception
+	 */
+	private static void testDijkstra() throws Exception {
+		long t0;
+		{	
+			CGraph graphTest=new CGraph();
+			int errD2 = 0;
+			
+			if (testDijkstraTests)
+				testDijkstraTests(graphTest, errD2);
+			if (generateRandomDijkstra){
+				printRandomDijkstraAnalysis();
+			}
+		}
+	}
+	/** Tests the dijkstra algorithms with known graphs and solutions. Outputs results to CSV
+	 * @param graphTest 
+	 * @param errD2
+	 * @throws Exception
+	 */
+	private static void testDijkstraTests(CGraph graphTest, int errD2) throws Exception {
+		long t0;
+		long t1;
+		int errD1;
+		{
+			for (int i = 0; i < 25; i++) {
+				int j = i + 1;
+				StringBuilder filename = new StringBuilder(0);
+				filename.append("Tests/Grafo");
+				filename.append(j);
+				filename.append(".txt");
+				graphTest.Read(filename.toString());
+
+				StringBuilder filenameDist = new StringBuilder(0);
+				filenameDist.append("Tests/Distancias");
+				filenameDist.append(j);
+				filenameDist.append(".txt");
+
+				long t2, t3;
+				// dijkstra
+				System.gc();
+				t0 = System.nanoTime();
+				graphTest.Dijkstra(graphTest.m_Vertices.get(0));
+				t1 = System.nanoTime();
+				errD1 = graphTest.CompareDijkstra(filenameDist.toString());
+				double tempD1 = (t1 - t0) / 1e9;
+				// dijkstraqueue
+				System.gc();
+				t2 = System.nanoTime();
+				graphTest.DijkstraQueue(graphTest.m_Vertices.get(0));
+				t3 = System.nanoTime();
+				errD1 = graphTest.CompareDijkstra(filenameDist.toString());
+				double tempD2 = (t3 - t2) / 1e9;
+				double tempDiff = tempD2 - tempD1;
+
+				// print
+				System.out.println("Dijkstra " + j + " time: " + tempD1 + " Errors: " + errD1
+						+ " DijkstraQueue " + j + " time: " + tempD2 + " Errors: " + errD2
+						+ " Time difference: " + tempDiff);
+			}
+		}
+	}
 	/** Generates an analysis in the form of a comma-separated text file
 	 * @param filename The filename of the result
 	 * @param numGrafs Number of graphs you want to generate.
@@ -227,6 +296,7 @@ public class CMain {
 			long t0, t1;
 
 			System.out.println("Testing graph " + i + " with " + algorihtm);
+			
 			if (algorihtm.toLowerCase().equals("greedy")) {
 				System.gc();
 				t0 = System.nanoTime();
@@ -238,11 +308,15 @@ public class CMain {
 				t0 = System.nanoTime();
 				track = graph.SalesmanTrackBacktracking(visits);
 				t1 = System.nanoTime();
+
+				track2.Read("Tests/TrackOptimo" + i + ".txt");
+				
 			} else if (algorihtm.toLowerCase().equals("backtrackinggreedy")) {
 				System.gc();
 				t0 = System.nanoTime();
 				track = graph.SalesmanTrackBacktrackingGreedy(visits);
 				t1 = System.nanoTime();
+				
 				track2.Read("Tests/TrackGreedy" + i + ".txt");
 
 			} else if (algorihtm.toLowerCase().equals("branchandbound1")) {
@@ -291,7 +365,6 @@ public class CMain {
 		System.out.println(NombreAlumno2);
 		System.out.println(ApellidosAlumno2);
 
-		boolean testSeries = false;
 		
 		if (!NIACorrecto(NIAAlumno1)) throw new Exception("El NIA " + NIAAlumno1 + " no es de alumno matriculado");
 		if (!NIAAlumno2.isEmpty() && !NIACorrecto(NIAAlumno2)) throw new Exception("El NIA " + NIAAlumno2 + " no es de alumno matriculado");
@@ -301,17 +374,16 @@ public class CMain {
 			return;
 		}
 		
-		boolean salir=false;
+		boolean salir = false;
+		
 		try {			
 			String algorihtm=args[0];
 			if (algorihtm.toLowerCase().equals("dijkstra") || algorihtm.toLowerCase().equals("dijkstraqueue")) {
 				String graphFilename=args[1];
 				System.out.println("Fichero de grafo: " + graphFilename);
 				System.out.println("Algoritmo: " + algorihtm);
-				if (args.length==4) {
-					
-					
-					if (args[3].toLowerCase().equals("salir")) salir=true;
+				if (args.length==3) {								
+					if (args[2].toLowerCase().equals("salir")) salir=true;
 					else {
 						System.out.println("Uso: fichero algoritmo grafo [visitas] [salir]");
 						return;
@@ -326,7 +398,7 @@ public class CMain {
 				}
 				long t0,t1;
 				
-				if (!testSeries){
+				if (!testDijkstra){
 					if (algorihtm.toLowerCase().equals("dijkstra")) {
 						System.gc();
 						t0=System.nanoTime();
@@ -347,63 +419,16 @@ public class CMain {
 						System.exit(0);
 					}
 				}
-				if (testSeries){
-					
-					CGraph graphTest=new CGraph();
-					int errD1 = 0;
-					int errD2 = 0;
-					boolean testProf = false;
-					boolean generateAnalysis = true;
-					
-					if (testProf) {
-						for (int i = 0; i < 25; i++) {
-							int j = i + 1;
-							StringBuilder filename = new StringBuilder(0);
-							filename.append("Tests/Grafo");
-							filename.append(j);
-							filename.append(".txt");
-							graphTest.Read(filename.toString());
-
-							StringBuilder filenameDist = new StringBuilder(0);
-							filenameDist.append("Tests/Distancias");
-							filenameDist.append(j);
-							filenameDist.append(".txt");
-
-							long t2, t3;
-							// dijkstra
-							System.gc();
-							t0 = System.nanoTime();
-							graphTest.Dijkstra(graphTest.m_Vertices.get(0));
-							t1 = System.nanoTime();
-							errD1 = graphTest.CompareDijkstra(filenameDist.toString());
-							double tempD1 = (t1 - t0) / 1e9;
-							// dijkstraqueue
-							System.gc();
-							t2 = System.nanoTime();
-							graphTest.DijkstraQueue(graphTest.m_Vertices.get(0));
-							t3 = System.nanoTime();
-							errD1 = graphTest.CompareDijkstra(filenameDist.toString());
-							double tempD2 = (t3 - t2) / 1e9;
-							double tempDiff = tempD2 - tempD1;
-
-							// print
-							System.out.println("Dijkstra " + j + " time: " + tempD1 + " Errors: " + errD1
-									+ " DijkstraQueue " + j + " time: " + tempD2 + " Errors: " + errD2
-									+ " Time difference: " + tempDiff);
-						} 
-					}
-					if (generateAnalysis){
-						printRandomDijkstraAnalysis();
-					}
-				}
-				
+				if (testDijkstra)
+					testDijkstra();				
 			}
 			else {
 				String graphFilename=args[1];
 				String visitsFilename=args[2];
 				if (args.length==4 && args[3].toLowerCase().equals("salir")) salir=true;
-				boolean autoTest = true;
-				if (!autoTest) {
+				
+				
+				if (!autoAlgorithmTest) {
 					System.out.println("Fichero de grafo: " + graphFilename);
 					System.out.println("Fichero de visitas: " + visitsFilename);
 					System.out.println("Algoritmo: " + algorihtm);
@@ -459,7 +484,7 @@ public class CMain {
 					System.out.println("Longitud: " + track.Length());
 					System.out.println("Time: " + (t1 - t0) / 1e9);
 				}
-				if (autoTest){
+				if (autoAlgorithmTest){
 					printAnalysis(algorihtm);
 				}
 			}
@@ -472,4 +497,5 @@ public class CMain {
 		}
 		if (args.length>3) System.exit(0);
     }
+
 }
