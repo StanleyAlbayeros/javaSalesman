@@ -380,24 +380,49 @@ public class CGraph {
 ///////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////		
 		
+		for (CVertex tmp : visitList){
+			tmp.m_VertexToVisit = true;
+		}
+		
 		CVertex currentVertex = visitList.pollFirst();
-		CVertex nextVertex = visitList.pollFirst();
-		CVertex lastVertex = visitList.getLast();
+		CVertex nextVertex = visitList.peekFirst();
 		
 		resultTrack.AddFirst(currentVertex);
-		while(nextVertex != null){						
+		
+		while(nextVertex != null){
+
+			visitList.remove(currentVertex);
+			
 			CTrack tempTrack = new CTrack(this);
 			this.DijkstraQueue(currentVertex);
+
+			for (CVertex temp : visitList){
+				if (temp.m_DijkstraDistance <= nextVertex.m_DijkstraDistance){
+					nextVertex = temp;
+				}
+			}			
+			
+			
+
 		
 			tempTrack=getDijkstraTrack(currentVertex,nextVertex);
 			
+			visitList.remove(nextVertex);
+
 //			for (CVertex tmp : visitList){
 //				tempTrack = getDijkstraTrack(currentVertex,tmp);
 //			}
+			
+//			for (CVertex tmp : tempTrack.m_Vertices){
+//				if (tmp.m_VertexToVisit == false){
+//					visitList.remove(tmp);
+//				}
+//			}
+			
 
 			resultTrack.Append(tempTrack);
 			currentVertex = nextVertex;
-			nextVertex = visitList.pollFirst();
+			nextVertex = visitList.peekFirst();
 		}
 		
 ///////////////////////////////////////////////////////////////////////////////////////		
@@ -491,11 +516,12 @@ public class CGraph {
 		}
 		
 		
-		this.DijkstraQueue(start);
+		//this.DijkstraQueue(start);
 		CVertex tmpVertex = last;
 		
 		tempTrack.AddFirst(tmpVertex);
 		while (tmpVertex.m_DijkstraPrevious != start){
+			tmpVertex.m_VertexToVisit = false;
 			tmpVertex = tmpVertex.m_DijkstraPrevious;
 			tempTrack.AddFirst(tmpVertex);
 		}

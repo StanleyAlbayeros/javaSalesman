@@ -149,7 +149,7 @@ public class CTrack {
 		s.useLocale(Locale.US);
 		try {
 			if (!s.nextLine().equalsIgnoreCase("TRACK")) throw new Exception(filename + " no tiene formato de fichero de camino");
-			// leer vértices
+			// leer vï¿½rtices
 			while (s.hasNextLine()) {
 				String linea = s.nextLine();
 				//System.out.println(linea);
@@ -165,6 +165,12 @@ public class CTrack {
 		finally {
 			s.close();
 		}
+    }
+    
+    public boolean Compare(CTrack track1, CTrack track2){
+    	
+    	
+    	return false;
     }
     // Print -------------------------------------------------------------------
     public String toString() {
