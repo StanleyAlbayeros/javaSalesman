@@ -1,10 +1,6 @@
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.Random;
-
-//import java.awt.*;
-//import java.io.*;
 
 public class CMain {
 	static CGraphView m_View;
@@ -147,15 +143,20 @@ public class CMain {
 	 * it will do numGraf graphs of i*5 vertex on each iteration, starting at i=1.
 	 * @throws Exception
 	 */
-	static void PrintRandomAnalysis(String filename, int numGrafs) throws Exception
+	static void printRandomDijkstraAnalysis() throws Exception
 	{
+		int numGrafs = 100;
+		String analysisName = "analisis3";
+		StringBuilder analysisN = new StringBuilder(0);
+		analysisN.append(analysisName);
+		analysisN.append(".txt");
 		
 	    String COMMA_DELIMITER = ",";	    
 	    String FILE_HEADER = "Vertex,Edge,Dijkstra,DijkstraPriority";
 	    
 	    PrintWriter writer;
 		try {
-			writer = new PrintWriter(filename, "UTF-8");
+			writer = new PrintWriter(analysisN.toString(), "UTF-8");
 			writer.println(FILE_HEADER);
 			
 			for (int i = 1; i <= numGrafs; i++) {
@@ -205,6 +206,77 @@ public class CMain {
 		}
 	}
 	
+	/** Outputs through the console an analysis with all of the 25 graphs
+	 * @param algorihtm the algorihtm to test
+	 */
+	static void printAnalysis (String algorihtm) throws Exception{
+		int totalCorrectGraphs = 0;
+		for (int i = 1; i < 26; i++) {
+			CGraph graph = new CGraph();
+			graph.Read("Tests/Grafo"+i+".txt");
+			CVisits visits = new CVisits();
+			visits.Read("Tests/Visitas"+i+".txt");
+			boolean drawGraph = false;
+			if (drawGraph) {
+				m_View = new CGraphView();
+				m_View.ShowGraph(graph);
+				m_View.ShowVisits(visits);
+			}
+			CTrack track;
+			CTrack track2 = new CTrack(graph);
+			long t0, t1;
+
+			System.out.println("Testing graph " + i + " with " + algorihtm);
+			if (algorihtm.toLowerCase().equals("greedy")) {
+				System.gc();
+				t0 = System.nanoTime();
+				track = graph.SalesmanTrackGreedy(visits);
+				t1 = System.nanoTime();
+
+			} else if (algorihtm.toLowerCase().equals("backtracking")) {
+				System.gc();
+				t0 = System.nanoTime();
+				track = graph.SalesmanTrackBacktracking(visits);
+				t1 = System.nanoTime();
+			} else if (algorihtm.toLowerCase().equals("backtrackinggreedy")) {
+				System.gc();
+				t0 = System.nanoTime();
+				track = graph.SalesmanTrackBacktrackingGreedy(visits);
+				t1 = System.nanoTime();
+				track2.Read("Tests/TrackGreedy" + i + ".txt");
+
+			} else if (algorihtm.toLowerCase().equals("branchandbound1")) {
+				System.gc();
+				t0 = System.nanoTime();
+				track = graph.SalesmanTrackBranchAndBound1(visits);
+				t1 = System.nanoTime();
+			} else if (algorihtm.toLowerCase().equals("branchandbound2")) {
+				System.gc();
+				t0 = System.nanoTime();
+				track = graph.SalesmanTrackBranchAndBound2(visits);
+				t1 = System.nanoTime();
+			} else if (algorihtm.toLowerCase().equals("branchandbound3")) {
+				System.gc();
+				t0 = System.nanoTime();
+				track = graph.SalesmanTrackBranchAndBound3(visits);
+				t1 = System.nanoTime();
+			} else
+				throw new Exception(algorihtm + " no es un algoritmo v�lido");
+			if (drawGraph) {
+				m_View.ShowTrack(track);
+				m_View.ShowVisits(visits);
+			}
+
+			int errors = track.Compare(track2);
+			System.out.println("Graph tested. Passed with " + errors + " errors. Total time:" + (t1 - t0) / 1e9 + "\n\n");
+			if (errors == 0 ){
+				totalCorrectGraphs++;
+			}
+		}
+		System.out.println("Graphs matching test cases with " + algorihtm + ": " + totalCorrectGraphs);
+		
+	}
+	
 	// main --------------------------------------------------------------------
 	/**
 	 * @param args
@@ -234,7 +306,6 @@ public class CMain {
 			String algorihtm=args[0];
 			if (algorihtm.toLowerCase().equals("dijkstra") || algorihtm.toLowerCase().equals("dijkstraqueue")) {
 				String graphFilename=args[1];
-				
 				System.out.println("Fichero de grafo: " + graphFilename);
 				System.out.println("Algoritmo: " + algorihtm);
 				if (args.length==4) {
@@ -243,16 +314,11 @@ public class CMain {
 					if (args[3].toLowerCase().equals("salir")) salir=true;
 					else {
 						System.out.println("Uso: fichero algoritmo grafo [visitas] [salir]");
-						//return;
+						return;
 					}
 				}
 				CGraph graph=new CGraph();
 				graph.Read(graphFilename);
-				String graphDistanceFilename=args[2];
-				
-				//
-				//graph = RandomGraph(10,19);
-				//
 				
 				if (!salir) {
 					m_View = new CGraphView();
@@ -276,11 +342,7 @@ public class CMain {
 					else throw new Exception(algorihtm + " no es un algoritmo v�lido");
 					
 					graph.PrintDistances();
-					System.out.println("Time: " + (t1-t0)/1e9);
-					int errors = graph.CompareDijkstra(graphDistanceFilename);
-
-					//System.out.println("Errors: " + errors);
-					
+					System.out.println("Time: " + (t1-t0)/1e9);					
 					if (salir) {
 						System.exit(0);
 					}
@@ -331,18 +393,8 @@ public class CMain {
 						} 
 					}
 					if (generateAnalysis){
-						int numRuns = 100;
-						String analysisName = "analisis3";
-						StringBuilder analysisN = new StringBuilder(0);
-						analysisN.append(analysisName);
-						analysisN.append(".txt");
-						
-						PrintRandomAnalysis(analysisN.toString(), numRuns);
-						
-						
+						printRandomDijkstraAnalysis();
 					}
-
-					
 				}
 				
 			}
@@ -350,75 +402,66 @@ public class CMain {
 				String graphFilename=args[1];
 				String visitsFilename=args[2];
 				if (args.length==4 && args[3].toLowerCase().equals("salir")) salir=true;
-				System.out.println("Fichero de grafo: " + graphFilename);
-				System.out.println("Fichero de visitas: " + visitsFilename);
-				System.out.println("Algoritmo: " + algorihtm);
-				CGraph graph=new CGraph();
-				graph.Read(graphFilename);
-				CVisits visits=new CVisits();
-				visits.Read(visitsFilename);
-				if (!salir) {
-					m_View = new CGraphView();
-					m_View.ShowGraph(graph);
-					m_View.ShowVisits(visits);
-				}
-				CTrack track;
-				CTrack track2 = new CTrack(graph);
-				
-				long t0,t1;
-				if (algorihtm.toLowerCase().equals("greedy")) {
-					System.gc();
-					t0=System.nanoTime();
-					track=graph.SalesmanTrackGreedy(visits);
-					t1=System.nanoTime();
-					
-				}
-				else if (algorihtm.toLowerCase().equals("backtracking")) {
-					System.gc();
-					t0=System.nanoTime();
-					track=graph.SalesmanTrackBacktracking(visits);
-					t1=System.nanoTime();
-				}
-				else if (algorihtm.toLowerCase().equals("backtrackinggreedy")) {
-					System.gc();
-					t0=System.nanoTime();
-					track=graph.SalesmanTrackBacktrackingGreedy(visits);
-					t1=System.nanoTime();
+				boolean autoTest = true;
+				if (!autoTest) {
+					System.out.println("Fichero de grafo: " + graphFilename);
+					System.out.println("Fichero de visitas: " + visitsFilename);
+					System.out.println("Algoritmo: " + algorihtm);
+					CGraph graph = new CGraph();
+					graph.Read(graphFilename);
+					CVisits visits = new CVisits();
+					visits.Read(visitsFilename);
+					if (!salir) {
+						m_View = new CGraphView();
+						m_View.ShowGraph(graph);
+						m_View.ShowVisits(visits);
+					}
+					CTrack track;
+					long t0, t1;
+					if (algorihtm.toLowerCase().equals("greedy")) {
+						System.gc();
+						t0 = System.nanoTime();
+						track = graph.SalesmanTrackGreedy(visits);
+						t1 = System.nanoTime();
 
-					String str = graphFilename.replaceAll("\\D+","");
-					track2.Read("Tests/TrackGreedy"+str+".txt");
-
+					} else if (algorihtm.toLowerCase().equals("backtracking")) {
+						System.gc();
+						t0 = System.nanoTime();
+						track = graph.SalesmanTrackBacktracking(visits);
+						t1 = System.nanoTime();
+					} else if (algorihtm.toLowerCase().equals("backtrackinggreedy")) {
+						System.gc();
+						t0 = System.nanoTime();
+						track = graph.SalesmanTrackBacktrackingGreedy(visits);
+						t1 = System.nanoTime();
+					} else if (algorihtm.toLowerCase().equals("branchandbound1")) {
+						System.gc();
+						t0 = System.nanoTime();
+						track = graph.SalesmanTrackBranchAndBound1(visits);
+						t1 = System.nanoTime();
+					} else if (algorihtm.toLowerCase().equals("branchandbound2")) {
+						System.gc();
+						t0 = System.nanoTime();
+						track = graph.SalesmanTrackBranchAndBound2(visits);
+						t1 = System.nanoTime();
+					} else if (algorihtm.toLowerCase().equals("branchandbound3")) {
+						System.gc();
+						t0 = System.nanoTime();
+						track = graph.SalesmanTrackBranchAndBound3(visits);
+						t1 = System.nanoTime();
+					} else
+						throw new Exception(algorihtm + " no es un algoritmo v�lido");
+					if (!salir) {
+						m_View.ShowTrack(track);
+						m_View.ShowVisits(visits);
+					}
+					System.out.println("Track: " + track);
+					System.out.println("Longitud: " + track.Length());
+					System.out.println("Time: " + (t1 - t0) / 1e9);
 				}
-				else if (algorihtm.toLowerCase().equals("branchandbound1")) {
-					System.gc();
-					t0=System.nanoTime();
-					track=graph.SalesmanTrackBranchAndBound1(visits);
-					t1=System.nanoTime();
+				if (autoTest){
+					printAnalysis(algorihtm);
 				}
-				else if (algorihtm.toLowerCase().equals("branchandbound2")) {
-					System.gc();
-					t0=System.nanoTime();
-					track=graph.SalesmanTrackBranchAndBound2(visits);
-					t1=System.nanoTime();
-				}
-				else if (algorihtm.toLowerCase().equals("branchandbound3")) {
-					System.gc();
-					t0=System.nanoTime();
-					track=graph.SalesmanTrackBranchAndBound3(visits);
-					t1=System.nanoTime();
-				}
-				else throw new Exception(algorihtm + " no es un algoritmo v�lido");
-				if (!salir) {
-					m_View.ShowTrack(track);
-					m_View.ShowVisits(visits);
-				}
-				System.out.println("Track: " + track);
-				System.out.println("Track2: " + track2);
-				System.out.println("Longitud: " + track.Length());
-				System.out.println("Time: " + (t1-t0)/1e9);
-
-				String lol = track.Compare(track2);
-				System.out.println(lol);
 			}
 		}
 		catch (Exception ex) {			

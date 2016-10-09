@@ -193,13 +193,14 @@ public class CTrack {
     	}
 		return l;
     }
-	public String Compare(CTrack track2) {
+	public int Compare(CTrack track2) {
+		int errors=0;
 		for (int i = 0; i < m_Vertices.size(); i++) {
 			
 			if (m_Vertices.get(i)!=track2.m_Vertices.get(i)){
-				return "error\n";
+				errors++;				
 			}
 		}
-	return "equal\n";
+		return errors;
 	}
 }
