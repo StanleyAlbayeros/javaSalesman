@@ -401,7 +401,6 @@ public class CGraph {
 							if (verbose) {
 								debugIndent = debugIndent.substring(3);
 						        System.out.println(debugIndent + "resultTrackSection= "+resultTrackSection.toString()+" , returning ");
-						        debugIndent = debugIndent + "|  ";
 						    }
 							return resultTrackSection;
 						} else {							

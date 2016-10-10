@@ -344,7 +344,8 @@ public class CMain {
 				m_View.ShowVisits(visits);
 			}
 
-			int errors = track.Compare(track2);
+			int errors = 0;
+			errors = track.Compare(track2);
 			System.out.println("Graph tested. Passed with " + errors + " errors. Total time:" + (t1 - t0) / 1e9 + "\n\n");
 			if (errors == 0 ){
 				totalCorrectGraphs++;
