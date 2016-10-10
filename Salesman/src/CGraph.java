@@ -7,6 +7,8 @@ import java.io.*;
 public class CGraph {
 	public ArrayList<CVertex> m_Vertices;
 	boolean m_Solved;
+	
+	final static boolean verbose = true;
 
 	public CGraph() {
 		m_Vertices = new ArrayList<CVertex>();
@@ -336,14 +338,70 @@ public class CGraph {
 //TODO
 		CTrack resultTrack = new CTrack(this);		
 		LinkedList<CVertex> visitList = visits.toCVertexList(this);
-		LinkedList<CVertex> tempVisitList = visits.toCVertexList(this);
 		
+		for (CVertex tmp : visitList){
+			tmp.m_VertexToVisit = true;
+		}
 		
+		CVertex firstVertex = visitList.getFirst();
+		CVertex lastVertex = visitList.getLast();
+		resultTrack.Append(RecursiveBacktracking(firstVertex, lastVertex, visitList));
 		
 		return resultTrack;
 		
 	}
-
+	
+	static String debugIndent = "";
+	
+	public CTrack RecursiveBacktracking(CVertex currentVertex , CVertex lastVertex, LinkedList<CVertex> visits) throws Exception{
+		CTrack resultTrackSection = new CTrack(this);
+	    if (verbose) {
+	        System.out.println(debugIndent + "Entering solvable ");
+	        debugIndent = debugIndent + "|  ";
+	    }
+		if (currentVertex == lastVertex){
+			if (visits.size()==1){
+				if (visits.peekFirst() == lastVertex){
+					if (verbose) {
+						debugIndent = debugIndent.substring(3);
+				        System.out.println(debugIndent + "found last vertex ");
+				        debugIndent = debugIndent + "|  ";
+				    }
+					resultTrackSection.AddLast(lastVertex);
+					return resultTrackSection;
+				} else {
+					if (verbose) {
+						debugIndent = debugIndent.substring(3);
+				        System.out.println(debugIndent + "peek != last, returning ");
+				        debugIndent = debugIndent + "|  ";
+				    }
+					return null;
+				}
+				
+			} else {
+				if (verbose) {
+					debugIndent = debugIndent.substring(3);
+			        System.out.println(debugIndent + "visits != 1, returning ");
+			        debugIndent = debugIndent + "|  ";
+			    }
+				return null;
+			}			
+		} else {
+			if (currentVertex.m_Neighbords.size()!=0) {
+				for (CVertex tmpCurrent : currentVertex.m_Neighbords) {
+					if (!tmpCurrent.m_VisitedVertex) {
+						tmpCurrent.m_VisitedVertex = true;
+						if (RecursiveBacktracking(tmpCurrent, lastVertex, visits) != null) {
+							resultTrackSection.Append(RecursiveBacktracking(tmpCurrent, lastVertex, visits));
+							resultTrackSection.AddFirst(currentVertex);
+							return resultTrackSection;
+						} 
+					}
+				} 
+			}
+			return null;
+		}
+	}
 	// =====================================================================================
 	// SalesmanTrackBacktrackingGreedy
 	// =====================================================
