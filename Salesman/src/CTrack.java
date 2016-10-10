@@ -15,6 +15,12 @@ import java.awt.Font;
 public class CTrack {
 	public LinkedList<CVertex> m_Vertices;
 	public CGraph m_Graph;
+	
+	////////////debug variables///////////
+	final static boolean verbose = true;
+	static String debugIndent = "";
+	////////////debug variables///////////
+	
 	public CTrack(CGraph graph) {
 		m_Graph=graph;
 		m_Vertices= new LinkedList<CVertex>();
@@ -28,8 +34,10 @@ public class CTrack {
 		m_Vertices.addLast(v);
 	}
 	public void AddLast(CVertex v) throws Exception {
-		assert m_Graph.MemberP(v);
-		m_Vertices.addLast(v);
+		if (v!=null) {
+			assert m_Graph.MemberP(v);
+			m_Vertices.addLast(v);
+		}
 	}
 	public void AddFirst(CVertex v) {
 		assert m_Graph.MemberP(v);
@@ -40,7 +48,10 @@ public class CTrack {
 	}
 	public void Append(CTrack t) {
 		assert m_Graph==t.m_Graph;
-		for (Iterator<CVertex> iter=t.m_Vertices.iterator(); iter.hasNext();) m_Vertices.addLast(iter.next());
+		if (t!=null) {
+			for (Iterator<CVertex> iter = t.m_Vertices.iterator(); iter.hasNext();)
+				m_Vertices.addLast(iter.next());
+		}
 	}
 	public void AppendBefore(CTrack t) {
 		assert m_Graph==t.m_Graph;

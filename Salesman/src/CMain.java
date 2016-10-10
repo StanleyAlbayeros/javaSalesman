@@ -5,12 +5,14 @@ import java.io.UnsupportedEncodingException;
 
 
 public class CMain {
-	
+	///////////////////debug variables///////////////////
 	static final boolean testDijkstra = false;
 	static final boolean testDijkstraTests = false;
 	static final boolean generateRandomDijkstra = false;
 	static final boolean autoAlgorithmTest = false;
+	///////////////////debug variables///////////////////
 	
+
 	static CGraphView m_View;
 	// Rellenar con los datos de los dos alumnos que presentan la pr�ctica
 	static String NombreAlumno1="Vernon";

@@ -8,8 +8,11 @@ public class CGraph {
 	public ArrayList<CVertex> m_Vertices;
 	boolean m_Solved;
 	
+	////////////debug variables///////////
 	final static boolean verbose = true;
-
+	static String debugIndent = "";
+	////////////debug variables///////////
+	
 	public CGraph() {
 		m_Vertices = new ArrayList<CVertex>();
 		m_Solved = false;
@@ -345,13 +348,13 @@ public class CGraph {
 		
 		CVertex firstVertex = visitList.getFirst();
 		CVertex lastVertex = visitList.getLast();
+		visitList.remove(firstVertex);
 		resultTrack.Append(RecursiveBacktracking(firstVertex, lastVertex, visitList));
 		
 		return resultTrack;
 		
 	}
 	
-	static String debugIndent = "";
 	
 	public CTrack RecursiveBacktracking(CVertex currentVertex , CVertex lastVertex, LinkedList<CVertex> visits) throws Exception{
 		CTrack resultTrackSection = new CTrack(this);
@@ -367,40 +370,54 @@ public class CGraph {
 				        System.out.println(debugIndent + "found last vertex ");
 				        debugIndent = debugIndent + "|  ";
 				    }
-					resultTrackSection.AddLast(lastVertex);
-					return resultTrackSection;
+					resultTrackSection.AddFirst(lastVertex);
 				} else {
 					if (verbose) {
 						debugIndent = debugIndent.substring(3);
 				        System.out.println(debugIndent + "peek != last, returning ");
 				        debugIndent = debugIndent + "|  ";
 				    }
-					return null;
+					resultTrackSection.Clear();
 				}
 				
 			} else {
 				if (verbose) {
 					debugIndent = debugIndent.substring(3);
-			        System.out.println(debugIndent + "visits != 1, returning ");
+			        System.out.println(debugIndent + "visits= "+visits.size()+" , returning ");
 			        debugIndent = debugIndent + "|  ";
 			    }
-				return null;
+				resultTrackSection.Clear();
 			}			
 		} else {
 			if (currentVertex.m_Neighbords.size()!=0) {
 				for (CVertex tmpCurrent : currentVertex.m_Neighbords) {
 					if (!tmpCurrent.m_VisitedVertex) {
 						tmpCurrent.m_VisitedVertex = true;
-						if (RecursiveBacktracking(tmpCurrent, lastVertex, visits) != null) {
-							resultTrackSection.Append(RecursiveBacktracking(tmpCurrent, lastVertex, visits));
+						CTrack nextTempTrack = RecursiveBacktracking(tmpCurrent, lastVertex, visits);
+						if ( !nextTempTrack.m_Vertices.isEmpty() ) {
 							resultTrackSection.AddFirst(currentVertex);
+							resultTrackSection.Append(nextTempTrack);
+							visits.remove(tmpCurrent);
+							if (verbose) {
+								debugIndent = debugIndent.substring(3);
+						        System.out.println(debugIndent + "resultTrackSection= "+resultTrackSection.toString()+" , returning ");
+						        debugIndent = debugIndent + "|  ";
+						    }
 							return resultTrackSection;
-						} 
+						} else {							
+							resultTrackSection.Clear();
+						}
 					}
 				} 
 			}
-			return null;
-		}
+			if (verbose) {
+				debugIndent = debugIndent.substring(3);
+		        System.out.println(debugIndent + "no viable neighbors, returning ");
+		        debugIndent = debugIndent + "|  ";
+		    }
+		}			
+		return resultTrackSection;
+
 	}
 	// =====================================================================================
 	// SalesmanTrackBacktrackingGreedy
