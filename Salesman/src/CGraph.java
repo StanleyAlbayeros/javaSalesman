@@ -63,10 +63,14 @@ public class CGraph {
 			p2 = new CVertex(x2, y2);
 			m_Vertices.add(p2);
 		}
-		if (!p1.m_Neighbords.contains(p2))
+		if (!p1.m_Neighbords.contains(p2)){
 			p1.m_Neighbords.add(p2);
-		if (!p2.m_Neighbords.contains(p1))
+			p1.m_allowedVisits++;
+		}
+		if (!p2.m_Neighbords.contains(p1)){
 			p2.m_Neighbords.add(p1);
+			p2.m_allowedVisits++;
+		}
 	}
 
 	public int nEdges() {
@@ -357,6 +361,7 @@ public class CGraph {
 	
 	
 	public CTrack RecursiveBacktracking(CVertex currentVertex , CVertex lastVertex, LinkedList<CVertex> visits) throws Exception{
+//TODO
 		CTrack resultTrackSection = new CTrack(this);
 	    if (verbose) {
 	        System.out.println(debugIndent + "Entering solvable ");
@@ -389,30 +394,52 @@ public class CGraph {
 				resultTrackSection.Clear();
 			}			
 		} else {
-			if (currentVertex.m_Neighbords.size()!=0) {
+			if (currentVertex.m_Neighbords.size() > 1) {
 				for (CVertex tmpCurrent : currentVertex.m_Neighbords) {
+					
 					if (!tmpCurrent.m_VisitedVertex) {
-						tmpCurrent.m_VisitedVertex = true;
-						CTrack nextTempTrack = RecursiveBacktracking(tmpCurrent, lastVertex, visits);
-						if ( !nextTempTrack.m_Vertices.isEmpty() ) {
-							resultTrackSection.AddFirst(currentVertex);
-							resultTrackSection.Append(nextTempTrack);
-							visits.remove(tmpCurrent);
-							if (verbose) {
-								debugIndent = debugIndent.substring(3);
-						        System.out.println(debugIndent + "resultTrackSection= "+resultTrackSection.toString()+" , returning ");
-						    }
-							return resultTrackSection;
-						} else {							
-							resultTrackSection.Clear();
+						tmpCurrent.m_allowedVisits--;
+						if (tmpCurrent.m_allowedVisits == 6665){
+							tmpCurrent.m_VisitedVertex = true;
+//TODO puede que tenga que devolver tracks parciales?
+						} else if (tmpCurrent.m_allowedVisits >= 0) {
+							CTrack nextTempTrack = RecursiveBacktracking(tmpCurrent, lastVertex, visits);
+							if(visits.remove(tmpCurrent)){
+								if (verbose) {
+									debugIndent = debugIndent.substring(3);
+									System.out.println(debugIndent + "found node in visitList");
+								}
+								tmpCurrent.m_allowedVisits = 6666;
+							}
+							
+							if (!nextTempTrack.m_Vertices.isEmpty()) {
+								
+								resultTrackSection.AddFirst(currentVertex);
+								resultTrackSection.Append(nextTempTrack);
+								if (verbose) {
+									debugIndent = debugIndent.substring(3);
+									System.out.println(debugIndent + "resultTrackSection= "
+											+ resultTrackSection.toString() + " , returning ");
+								}
+								return resultTrackSection;
+							} else {
+								resultTrackSection.Clear();
+//								tmpCurrent.m_allowedVisits++;
+								
+							}//TODO poner los verbose en cada resulttracksection.clear para ver donde peta
+							//TODO IDEA! en los vertices con allowed visits > 1, hacer que allowedvisits = numero grande
+							//para no borrar el camino hecho para la siguiente vez que pasemos haciendo un
+							//if allowed (visits == numero grande)
+						} else if (tmpCurrent.m_allowedVisits < 0 ){
+							tmpCurrent.m_VisitedVertex = true;
 						}
+
 					}
-				} 
+				}
 			}
 			if (verbose) {
 				debugIndent = debugIndent.substring(3);
 		        System.out.println(debugIndent + "no viable neighbors, returning ");
-		        debugIndent = debugIndent + "|  ";
 		    }
 		}			
 		return resultTrackSection;
@@ -482,6 +509,10 @@ public class CGraph {
 		resultTrack.AddFirst(currentVertex);
 		
 		while(nextVertex != null){
+			if (verbose) {
+		        System.out.println(debugIndent + "Entering solvable ");
+		        debugIndent = debugIndent + "|  ";
+		    }
 
 			visitList.remove(currentVertex);
 			
@@ -491,6 +522,11 @@ public class CGraph {
 			for (CVertex temp : visitList){
 				if ((temp!=lastVertex) && (temp.m_DijkstraDistance <= nextVertex.m_DijkstraDistance)){
 					nextVertex = temp;
+					if (verbose) {
+						debugIndent = debugIndent.substring(3);
+				        System.out.println(debugIndent + "found best tmp vertex ");
+				        debugIndent = debugIndent + "|  ";
+				    }
 				}
 			}
 		
