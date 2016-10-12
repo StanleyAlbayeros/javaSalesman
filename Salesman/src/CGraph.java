@@ -396,6 +396,7 @@ public class CGraph {
 			        System.out.println(debugIndent + "New best solution track: " + bestSolution.toString() + " " + bestSolution.isTrackSolvedtoString());
 			        System.out.println(debugIndent + "-------------------------------------------------------------------------------");
 			    }
+				bestSolution.m_solutionTrack  = true;
 				return bestSolution;
 				//throw new Exception("Path found");
 			} else {
