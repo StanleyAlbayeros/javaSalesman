@@ -469,7 +469,7 @@ public class CMain {
 						track = graph.SalesmanTrackBacktracking(visits);
 						t1 = System.nanoTime();
 						if (debug){
-							int i = 5;
+							int i = 1;
 							track2.Read("Tests/TrackOptimo" + i + ".txt");
 						}
 					} else if (algorihtm.toLowerCase().equals("backtrackinggreedy")) {

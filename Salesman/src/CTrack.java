@@ -232,26 +232,35 @@ public class CTrack {
 	
 	static public CTrack minLength(CTrack track1, CTrack track2, CGraph graph){
 		CTrack min = new CTrack (graph);
-		if (track1.m_solutionTrack && track2.m_solutionTrack) {
-			if (track1.Length() < track2.Length()) {
+		if ((track1.Length()>0) && (track2.Length()>0)) {
+			if (track1.m_solutionTrack && track2.m_solutionTrack) {
+				if (track1.Length() < track2.Length()) {
+					min.Append(track1);
+
+
+					min.m_solutionTrack = true;
+				}
+				if (track1.Length() >= track2.Length()) {
+					min.Append(track2);
+
+					min.m_solutionTrack = true;
+				}
+			} else if (track1.m_solutionTrack) {
 				min.Append(track1);
-				
-				
-				min.m_solutionTrack=true;
-			}
-			if (track1.Length() >= track2.Length()) {
+
+				min.m_solutionTrack = true;
+			} else if (track2.m_solutionTrack) {
 				min.Append(track2);
 
-				min.m_solutionTrack=true;
+				min.m_solutionTrack = true;
 			} 
-		} else if (track1.m_solutionTrack){
-			min.Append(track1);
-
-			min.m_solutionTrack=true;
-		} else if (track2.m_solutionTrack){
-			min.Append(track2);
-
-			min.m_solutionTrack=true;
+		} else {
+			if (track1.Length()==0){
+				min = track2;
+			}
+			if (track2.Length()==0){
+				min = track1;
+			}
 		}
 		
 		return min;		

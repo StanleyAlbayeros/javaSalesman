@@ -391,6 +391,7 @@ public class CGraph {
 		int visitElementIndex = 0;
 		boolean visitElementRemoved = false;
 		CTrack tmpTrack = new CTrack(this);
+		LinkedList<CVertex> exploreLater = new LinkedList<>();
 		
 //	if partial is a complete solution
 		if (visitList.isEmpty()){
@@ -418,9 +419,7 @@ public class CGraph {
 				}
 				throw new Exception("visitlist empty, not in last vertex");
 			}
-		}
-//	else 
-		else {
+		} else {
 //		for each possible option for the next choice to be made
 			boolean allVisited = true;
 			for (CVertex tmp : partialSolution.m_Vertices.getLast().m_Neighbords){
@@ -452,16 +451,21 @@ public class CGraph {
 						continue;
 					}
 				 */
+
+				if ((partialSolution.m_Vertices.contains(tmpVertex))&& !(tmpVertex.m_allowedVisits>0)){
+					if (verbose) {
+						System.out.println(debugIndent + " Just passed this vertex, saving for later");
+					}
+					exploreLater.add(tmpVertex);
+					continue;						
+				}
 				if (visitList.contains(tmpVertex)){		
 					visitElementIndex = visitList.indexOf(tmpVertex);
 					visitElementRemoved = visitList.remove(tmpVertex);
-				} else {
-					if ((partialSolution.m_Vertices.contains(tmpVertex))){
-					if (verbose) {
-						System.out.println(debugIndent + " Just passed this vertex, prunning");
-					}
-				}
-				}
+				} 
+				
+				
+				
 				partialSolution.AddLast(tmpVertex);
 				tmpVertex.m_allowedVisits --;
 //			if partial cannot become better than minCost
@@ -472,7 +476,7 @@ public class CGraph {
 						System.out.println(debugIndent + distDiff+" longer, prunning");
 					}
 				} else {
-					if (tmpVertex.m_allowedVisits >= 0) {
+					if ((tmpVertex.m_allowedVisits >= 0)) {
 						if (tmpVertex.m_allowedVisits == 0) {
 							tmpVertex.m_VisitedVertex = true;
 						}
@@ -521,7 +525,89 @@ public class CGraph {
 					visitElementRemoved = false;
 				}
 			}
+			
+			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
+			
+			if (!exploreLater.isEmpty()) {
+				if (verbose) {
+			        System.out.println(debugIndent + "----EXPLORING LATER-----");
+				}
+				tmpTrack.Clear();
+				for (CVertex tmpVertex : exploreLater) {
+					if (visitList.contains(tmpVertex)) {
+						visitElementIndex = visitList.indexOf(tmpVertex);
+						visitElementRemoved = visitList.remove(tmpVertex);
+					}
+					partialSolution.AddLast(tmpVertex);
+					tmpVertex.m_allowedVisits--;
+					if (partialSolution.Length() >= bestSolution.Length()) {
+						if (verbose) {
+							double distDiff = partialSolution.Length() - bestSolution.Length();
+							System.out.println(debugIndent + distDiff + "----Explore Later---- longer, prunning");
+						}
+					} else {
+						if (tmpVertex.m_allowedVisits >= 0) {
+							if (tmpVertex.m_allowedVisits == 0) {
+								tmpVertex.m_VisitedVertex = true;
+							}
+							try {
+								tmpTrack = recursiveBacktracking(partialSolution, bestSolution,
+										visitList, originalVisitList, lastVertex);
+							} catch (Exception e) {
+								partialSolution.removeLast();
+								tmpVertex.m_allowedVisits++;
+								if (tmpVertex.m_allowedVisits > 0) {
+									tmpVertex.m_VisitedVertex = false;
+								}
+								if (visitElementRemoved) {
+									visitList.add(visitElementIndex, tmpVertex);
+									visitElementRemoved = false;
+								}
+								if (verbose) {
+									debugIndent = debugIndent.substring(3);
+									System.out.println(
+											debugIndent + "----Explore Later---- Caught exception: " + e.getMessage());
+								}
+								continue;
+							}
+							if (verbose) {
+								System.out.println(debugIndent
+										+ "-------------------------------------------------------------------------------");
+								System.out
+										.println(debugIndent + "----Explore Later---- Comparing" + bestSolution.toString()
+												+ " " + bestSolution.isTrackSolvedtoString()
+												+ " with " + tmpTrack.toString() + " "
+												+ tmpTrack.isTrackSolvedtoString());
+							}
+							bestSolution = CTrack.minLength(bestSolution, tmpTrack, this);
+							if (verbose) {
+								System.out
+										.println(debugIndent + "----Explore Later---- Result: " + bestSolution.toString()
+												+ " " + bestSolution.isTrackSolvedtoString());
+								System.out.println(debugIndent
+										+ "-------------------------------------------------------------------------------");
+							}
+						}
+					}
+					partialSolution.removeLast();
+					tmpVertex.m_allowedVisits++;
+					if (tmpVertex.m_allowedVisits > 0) {
+						tmpVertex.m_VisitedVertex = false;
+					}
+					if (visitElementRemoved) {
+						visitList.add(visitElementIndex, tmpVertex);
+						visitElementRemoved = false;
+					}
+				} 
+			}
+			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
 
+			
 		}
 //	return minCost	
 		
