@@ -9,7 +9,7 @@ public class CGraph {
 	boolean m_Solved;
 	
 	////////////debug variables///////////
-	final static boolean verbose = false;
+	final static boolean verbose = true;
 	static String debugIndent = "";
 	////////////debug variables///////////
 	
@@ -457,7 +457,7 @@ public class CGraph {
 							partialSolution.removeLast();
 							tmpVertex.m_allowedVisits++;
 							if (tmpVertex.m_allowedVisits > 0) {
-								tmpVertex.m_VisitedVertex = true;
+								tmpVertex.m_VisitedVertex = false;
 							}
 							if (visitElementRemoved) {
 								visitList.add(visitElementIndex, tmpVertex);
@@ -487,7 +487,7 @@ public class CGraph {
 				partialSolution.removeLast();
 				tmpVertex.m_allowedVisits++;
 				if (tmpVertex.m_allowedVisits>0) {
-					tmpVertex.m_VisitedVertex = true;
+					tmpVertex.m_VisitedVertex = false;
 				}
 				if (visitElementRemoved){
 					visitList.add(visitElementIndex, tmpVertex);
@@ -511,7 +511,9 @@ public class CGraph {
 			}
 			return bestSolution;
 		} else { 
+			
 			throw new Exception("best solution is not a solution track");
+//			return partialSolution;
 		}
 		
 	}

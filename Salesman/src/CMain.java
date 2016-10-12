@@ -9,7 +9,7 @@ public class CMain {
 	static final boolean testDijkstra = false;
 	static final boolean testDijkstraTests = false;
 	static final boolean generateRandomDijkstra = false;
-	static final boolean autoAlgorithmTest = true;
+	static final boolean autoAlgorithmTest = false;
 	///////////////////debug variables///////////////////
 	
 
@@ -145,6 +145,7 @@ public class CMain {
 			ex.printStackTrace(System.out);
 		}
 	}
+	
 	/** Dijkstra test suite
 	 * @throws Exception
 	 */
@@ -284,6 +285,7 @@ public class CMain {
 	static void printAnalysis (String algorihtm) throws Exception{
 		int totalCorrectGraphs = 0;
 		for (int i = 1; i < 26; i++) {
+			if (i==6) continue;
 			CGraph graph = new CGraph();
 			graph.Read("Tests/Grafo"+i+".txt");
 			CVisits visits = new CVisits();
