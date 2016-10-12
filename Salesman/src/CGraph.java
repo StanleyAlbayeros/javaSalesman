@@ -374,8 +374,7 @@ public class CGraph {
     if (verbose) {
       System.out.println(debugIndent + "VisitList: " + visitList.size() + " Entering with: " + partialSolution.toString());
       debugIndent = debugIndent + "|  ";
-  }
-    
+    }    
     
 		int visitElementIndex = 0;
 		boolean visitElementRemoved = false;
@@ -386,15 +385,17 @@ public class CGraph {
 			if(partialSolution.m_Vertices.getLast() == lastVertex){
 //		then minCost = min(minCost,the cost of the solution represented by partial)
 //			partialSolution.AddLast(lastVertex);
-				partialSolution.m_solutionTrack = true;
-				bestSolution = CTrack.minLength(bestSolution, partialSolution, this);
 				if (verbose) {
 					debugIndent = debugIndent.substring(3);
 			        System.out.println(debugIndent + "-------------------------------------------------------------------------------");
-			        System.out.println(debugIndent + "found last vertex path: " + bestSolution.toString() + " " + bestSolution.isTrackSolvedtoString());
+			        System.out.println(debugIndent + "Potential solution track: " + partialSolution.toString() + " " + partialSolution.isTrackSolvedtoString());
+			    }
+				partialSolution.m_solutionTrack = true ;
+				bestSolution = CTrack.minLength(bestSolution, partialSolution, this);
+				if (verbose) {
+			        System.out.println(debugIndent + "New best solution track: " + bestSolution.toString() + " " + bestSolution.isTrackSolvedtoString());
 			        System.out.println(debugIndent + "-------------------------------------------------------------------------------");
 			    }
-				this.m_Solved = true;
 				return bestSolution;
 				//throw new Exception("Path found");
 			} else {
@@ -415,45 +416,18 @@ public class CGraph {
 			if (allVisited){
 				throw new Exception("No more neighbors");
 			}
+			
 			partialSolution.m_solutionTrack = false;
+			
 			for (CVertex tmpVertex : partialSolution.m_Vertices.getLast().m_Neighbords){
 //			do try that option, that is, change partial to incorporate this choice
 				
-//				if (tmpVertex == lastVertex){
-//					if (visitList.contains(lastVertex)){
-//						if (visitList.size()==1){
-//							partialSolution.AddLast(tmpVertex);
-//							bestSolution = CTrack.minLength(bestSolution, partialSolution, this);
-//							if (verbose) {
-//				        System.out.println(debugIndent + "found last vertex " + bestSolution.toString());
-//							}
-//						} continue;
-//					}
-//				}
-				
 				partialSolution.AddLast(tmpVertex);
 				tmpVertex.m_allowedVisits --;
-				if (visitList.contains(tmpVertex)){					
-//					if (visitList.size()==1){
-//						if(tmpVertex == lastVertex){
-////					then minCost = min(minCost,the cost of the solution represented by partial)
-////						partialSolution.AddLast(lastVertex);
-//							bestSolution = CTrack.minLength(bestSolution, partialSolution, this);
-//							if (verbose) {
-//						        System.out.println(debugIndent + "found last vertex " + bestSolution.toString());
-//						    }
-//							continue;
-//						} else {
-//							//TODO HOW TO EXIT IF IT'S EMPTY BUT THE LAST VERTEX ISN'T THE LAST TO VISIT
-//							if (verbose) {
-//								System.out.println(debugIndent + "kkkkk Empty but I'm not the last vertex you should visit kkkkk");
-//							} continue;
-//						}
-//					}
-					
+				if (visitList.contains(tmpVertex)){		
 					visitElementIndex = visitList.indexOf(tmpVertex);
 					visitElementRemoved = visitList.remove(tmpVertex);
-					}
+				}
 //			if partial cannot become better than minCost
 				if (partialSolution.Length() >= bestSolution.Length()){
 //				then skip // prune
@@ -469,13 +443,7 @@ public class CGraph {
 						// else minCost ← min(minCost, Opt Backtrack(partial,best, visitlist))
 						try {
 							tmpTrack = recursiveBacktracking(partialSolution, bestSolution, visitList, lastVertex);
-							bestSolution = CTrack.minLength(bestSolution, tmpTrack, this);
-//							if (this.m_Solved) {
-//								bestSolution = CTrack.minLength(bestSolution, tmpTrack, this);
-//							} else {
-//								bestSolution = tmpTrack;
-//							}
-
+//							bestSolution = CTrack.minLength(bestSolution, tmpTrack, this);
 						} catch (Exception e) {
 							partialSolution.removeLast();
 							tmpVertex.m_allowedVisits++;
@@ -493,10 +461,7 @@ public class CGraph {
 
 							continue;
 						}
-						
-
-						// bestSolution = recursiveBacktracking(partialSolution, bestSolution, visitList,
-						// lastVertex);
+						bestSolution = CTrack.minLength(bestSolution, tmpTrack, this);
 					}
 				}
 //			change partial back to undo the choice made at the for each's start
