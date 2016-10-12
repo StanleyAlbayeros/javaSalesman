@@ -9,7 +9,8 @@ public class CMain {
 	static final boolean testDijkstra = false;
 	static final boolean testDijkstraTests = false;
 	static final boolean generateRandomDijkstra = false;
-	static final boolean autoAlgorithmTest = false;
+	static final boolean autoAlgorithmTest = true;
+	static final boolean debug = false;
 	///////////////////debug variables///////////////////
 	
 
@@ -285,7 +286,7 @@ public class CMain {
 	static void printAnalysis (String algorihtm) throws Exception{
 		int totalCorrectGraphs = 0;
 		for (int i = 1; i < 26; i++) {
-			if (i==6) continue;
+			if (i==7)continue;
 			CGraph graph = new CGraph();
 			graph.Read("Tests/Grafo"+i+".txt");
 			CVisits visits = new CVisits();
@@ -360,6 +361,7 @@ public class CMain {
 		System.out.println("Graphs matching test cases with " + algorihtm + ": " + totalCorrectGraphs + ". Total testcase graphs: 25.");
 		
 	}
+	
 	
 	// main --------------------------------------------------------------------
 	/**
@@ -452,6 +454,8 @@ public class CMain {
 						m_View.ShowVisits(visits);
 					}
 					CTrack track;
+					CTrack track2 = new CTrack(graph);
+				
 					long t0, t1;
 					if (algorihtm.toLowerCase().equals("greedy")) {
 						System.gc();
@@ -464,6 +468,10 @@ public class CMain {
 						t0 = System.nanoTime();
 						track = graph.SalesmanTrackBacktracking(visits);
 						t1 = System.nanoTime();
+						if (debug){
+							int i = 5;
+							track2.Read("Tests/TrackOptimo" + i + ".txt");
+						}
 					} else if (algorihtm.toLowerCase().equals("backtrackinggreedy")) {
 						System.gc();
 						t0 = System.nanoTime();
@@ -491,7 +499,13 @@ public class CMain {
 						m_View.ShowVisits(visits);
 					}
 					System.out.println("Track: " + track);
+					if (debug){
+						System.out.println("Track " + track2);
+					}
 					System.out.println("Longitud: " + track.Length());
+					if (debug){
+						System.out.println("Longitud test: " + track2.Length());
+					}
 					System.out.println("Time: " + (t1 - t0) / 1e9);
 				}
 				if (autoAlgorithmTest){
