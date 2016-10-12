@@ -9,7 +9,7 @@ public class CGraph {
 	boolean m_Solved;
 	
 	////////////debug variables///////////
-	final static boolean verbose = true;
+	final static boolean verbose = false;
 	static String debugIndent = "";
 	////////////debug variables///////////
 	
@@ -363,7 +363,14 @@ public class CGraph {
 		tmpTrack.AddFirst(firstVertex);
 		worstSolution.m_solutionTrack = false;
 		
-		resultTrack = recursiveBacktracking(tmpTrack, worstSolution, visitList, lastVertex);
+		try {
+			resultTrack = recursiveBacktracking(tmpTrack, worstSolution, visitList, lastVertex);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if (e.getMessage()=="best solution is not a solution track"){
+				throw new Exception("Can't solve this graph");
+			}
+		}
 		
 		return resultTrack;
 		
