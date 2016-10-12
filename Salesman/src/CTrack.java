@@ -15,6 +15,7 @@ import java.awt.Font;
 public class CTrack {
 	public LinkedList<CVertex> m_Vertices;
 	public CGraph m_Graph;
+	public boolean m_solutionTrack;
 	
 	////////////debug variables///////////
 	final static boolean verbose = true;
@@ -24,6 +25,7 @@ public class CTrack {
 	public CTrack(CGraph graph) {
 		m_Graph=graph;
 		m_Vertices= new LinkedList<CVertex>();
+		m_solutionTrack = false;
 	}
 	public void AddLast(double x, double y) throws Exception {
 		CVertex v=m_Graph.GetVertex(x, y);
@@ -39,6 +41,9 @@ public class CTrack {
 			m_Vertices.addLast(v);
 		}
 	}
+	public void removeLast(){
+		m_Vertices.removeLast();
+	}
 	public void AddFirst(CVertex v) {
 		assert m_Graph.MemberP(v);
 		m_Vertices.addFirst(v);
@@ -46,16 +51,26 @@ public class CTrack {
 	public void Clear() {
 		m_Vertices.clear();
 	}
+	public CTrack returnAppendedTrack(CTrack t) {
+		assert m_Graph==t.m_Graph;
+		if (t!=null) {
+			t.AppendBefore(this);
+			}
+		return this;
+	}
+	
 	public void Append(CTrack t) {
 		assert m_Graph==t.m_Graph;
 		if (t!=null) {
-			for (Iterator<CVertex> iter = t.m_Vertices.iterator(); iter.hasNext();)
+			for (Iterator<CVertex> iter = t.m_Vertices.iterator(); iter.hasNext();){
 				m_Vertices.addLast(iter.next());
+			}
 		}
 	}
-	public void AppendBefore(CTrack t) {
+	public CTrack AppendBefore(CTrack t) {
 		assert m_Graph==t.m_Graph;
 		for (Iterator<CVertex> iter=t.m_Vertices.descendingIterator(); iter.hasNext();) m_Vertices.addFirst(iter.next());
+		return this;
 	}
 
 	// Draw --------------------------------------------------------------------
@@ -213,5 +228,31 @@ public class CTrack {
 			}
 		}
 		return errors;
+	}
+	
+	static public CTrack minLength(CTrack track1, CTrack track2, CGraph graph){
+		CTrack min = new CTrack (graph);
+		if (track1.m_solutionTrack && track2.m_solutionTrack) {
+			if (track1.Length() < track2.Length()) {
+				min = track1;
+			}
+			if (track1.Length() >= track2.Length()) {
+				min = track2;
+			} 
+		} else if (track1.m_solutionTrack){
+			min = track1;
+		} else if (track2.m_solutionTrack){
+			min = track2;
+		}
+		
+		return min;		
+	}
+	public String isTrackSolvedtoString(){
+		if (m_solutionTrack){
+			return "solved track";
+		} else {
+			return "not solved track";
+		}
+		
 	}
 }
