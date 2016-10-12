@@ -300,58 +300,62 @@ public class CMain {
 
 			System.out.println("Testing graph " + i + " with " + algorihtm);
 			
-			if (algorihtm.toLowerCase().equals("greedy")) {
-				System.gc();
-				t0 = System.nanoTime();
-				track = graph.SalesmanTrackGreedy(visits);
-				t1 = System.nanoTime();
+			try {
+				if (algorihtm.toLowerCase().equals("greedy")) {
+					System.gc();
+					t0 = System.nanoTime();
+					track = graph.SalesmanTrackGreedy(visits);
+					t1 = System.nanoTime();
 
-			} else if (algorihtm.toLowerCase().equals("backtracking")) {
-				System.gc();
-				t0 = System.nanoTime();
-				track = graph.SalesmanTrackBacktracking(visits);
-				t1 = System.nanoTime();
+				} else if (algorihtm.toLowerCase().equals("backtracking")) {
+					System.gc();
+					t0 = System.nanoTime();
+					track = graph.SalesmanTrackBacktracking(visits);
+					t1 = System.nanoTime();
 
-				track2.Read("Tests/TrackOptimo" + i + ".txt");
-				
-			} else if (algorihtm.toLowerCase().equals("backtrackinggreedy")) {
-				System.gc();
-				t0 = System.nanoTime();
-				track = graph.SalesmanTrackBacktrackingGreedy(visits);
-				t1 = System.nanoTime();
-				
-				track2.Read("Tests/TrackGreedy" + i + ".txt");
+					track2.Read("Tests/TrackOptimo" + i + ".txt");
 
-			} else if (algorihtm.toLowerCase().equals("branchandbound1")) {
-				System.gc();
-				t0 = System.nanoTime();
-				track = graph.SalesmanTrackBranchAndBound1(visits);
-				t1 = System.nanoTime();
-			} else if (algorihtm.toLowerCase().equals("branchandbound2")) {
-				System.gc();
-				t0 = System.nanoTime();
-				track = graph.SalesmanTrackBranchAndBound2(visits);
-				t1 = System.nanoTime();
-			} else if (algorihtm.toLowerCase().equals("branchandbound3")) {
-				System.gc();
-				t0 = System.nanoTime();
-				track = graph.SalesmanTrackBranchAndBound3(visits);
-				t1 = System.nanoTime();
-			} else
-				throw new Exception(algorihtm + " no es un algoritmo v�lido");
-			if (drawGraph) {
-				m_View.ShowTrack(track);
-				m_View.ShowVisits(visits);
-			}
+				} else if (algorihtm.toLowerCase().equals("backtrackinggreedy")) {
+					System.gc();
+					t0 = System.nanoTime();
+					track = graph.SalesmanTrackBacktrackingGreedy(visits);
+					t1 = System.nanoTime();
 
-			int errors = 0;
-			errors = track.Compare(track2);
-			System.out.println("Graph tested. Passed with " + errors + " errors. Total time:" + (t1 - t0) / 1e9 + "\n\n");
-			if (errors == 0 ){
-				totalCorrectGraphs++;
+					track2.Read("Tests/TrackGreedy" + i + ".txt");
+
+				} else if (algorihtm.toLowerCase().equals("branchandbound1")) {
+					System.gc();
+					t0 = System.nanoTime();
+					track = graph.SalesmanTrackBranchAndBound1(visits);
+					t1 = System.nanoTime();
+				} else if (algorihtm.toLowerCase().equals("branchandbound2")) {
+					System.gc();
+					t0 = System.nanoTime();
+					track = graph.SalesmanTrackBranchAndBound2(visits);
+					t1 = System.nanoTime();
+				} else if (algorihtm.toLowerCase().equals("branchandbound3")) {
+					System.gc();
+					t0 = System.nanoTime();
+					track = graph.SalesmanTrackBranchAndBound3(visits);
+					t1 = System.nanoTime();
+				} else
+					throw new Exception(algorihtm + " no es un algoritmo v�lido");
+				if (drawGraph) {
+					m_View.ShowTrack(track);
+					m_View.ShowVisits(visits);
+				} 
+				int errors = 0;
+				errors = track.Compare(track2);
+				double lengthDiff = track2.Length() - track.Length();
+				System.out.println("Graph tested. Passed with " + errors + " errors. Total time:" + (t1 - t0) / 1e9 + " Length difference: " + lengthDiff +"\n\n");
+				if (errors == 0 || (track2.Length() >= track.Length())){
+					totalCorrectGraphs++;
+				}
+			} catch (Exception e) {
+				System.out.println("Caught exception: " + e.getMessage() + "\n");
 			}
 		}
-		System.out.println("Graphs matching test cases with " + algorihtm + ": " + totalCorrectGraphs);
+		System.out.println("Graphs matching test cases with " + algorihtm + ": " + totalCorrectGraphs + ". Total testcase graphs: 25.");
 		
 	}
 	
