@@ -234,15 +234,24 @@ public class CTrack {
 		CTrack min = new CTrack (graph);
 		if (track1.m_solutionTrack && track2.m_solutionTrack) {
 			if (track1.Length() < track2.Length()) {
-				min = track1;
+				min.Append(track1);
+				
+				
+				min.m_solutionTrack=true;
 			}
 			if (track1.Length() >= track2.Length()) {
-				min = track2;
+				min.Append(track2);
+
+				min.m_solutionTrack=true;
 			} 
 		} else if (track1.m_solutionTrack){
-			min = track1;
+			min.Append(track1);
+
+			min.m_solutionTrack=true;
 		} else if (track2.m_solutionTrack){
-			min = track2;
+			min.Append(track2);
+
+			min.m_solutionTrack=true;
 		}
 		
 		return min;		

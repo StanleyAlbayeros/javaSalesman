@@ -370,7 +370,7 @@ public class CGraph {
 	}
 
 	public CTrack recursiveBacktracking(CTrack partialSolution, CTrack bestSolution, LinkedList<CVertex> visitList, CVertex lastVertex) throws Exception{
-//TODO the way partial solution arrives to this part is detrimental, it's so short that it¡s instantly the best length, always.
+//TODO the way partial solution arrives to this part is detrimental, it's so short that it instantly the best length, always.
     if (verbose) {
       System.out.println(debugIndent + "VisitList: " + visitList.size() + " Entering with: " + partialSolution.toString());
       debugIndent = debugIndent + "|  ";
@@ -387,14 +387,15 @@ public class CGraph {
 //			partialSolution.AddLast(lastVertex);
 				if (verbose) {
 					debugIndent = debugIndent.substring(3);
-			        System.out.println(debugIndent + "-------------------------------------------------------------------------------");
+			        System.out.println(debugIndent + "#####################################################################");
 			        System.out.println(debugIndent + "Potential solution track: " + partialSolution.toString() + " " + partialSolution.isTrackSolvedtoString());
+			        System.out.println(debugIndent + "Previous best solution track: " + bestSolution.toString() + " " + bestSolution.isTrackSolvedtoString());
 			    }
 				partialSolution.m_solutionTrack = true ;
 				bestSolution = CTrack.minLength(bestSolution, partialSolution, this);
 				if (verbose) {
 			        System.out.println(debugIndent + "New best solution track: " + bestSolution.toString() + " " + bestSolution.isTrackSolvedtoString());
-			        System.out.println(debugIndent + "-------------------------------------------------------------------------------");
+			        System.out.println(debugIndent + "#####################################################################");
 			    }
 				bestSolution.m_solutionTrack  = true;
 				return bestSolution;
@@ -462,7 +463,17 @@ public class CGraph {
 
 							continue;
 						}
+						if (verbose) {
+					        System.out.println(debugIndent + "-------------------------------------------------------------------------------");
+							System.out.println(debugIndent + "Comparing" + bestSolution.toString()+" "+ bestSolution.isTrackSolvedtoString() + " with " + tmpTrack.toString() + " " + tmpTrack.isTrackSolvedtoString());
+						}
+						
 						bestSolution = CTrack.minLength(bestSolution, tmpTrack, this);
+						
+						if (verbose) {
+							System.out.println(debugIndent + "Result: " + bestSolution.toString() + " " + bestSolution.isTrackSolvedtoString() );
+					        System.out.println(debugIndent + "-------------------------------------------------------------------------------");
+						}
 					}
 				}
 //			change partial back to undo the choice made at the for each's start
@@ -476,6 +487,13 @@ public class CGraph {
 					visitElementRemoved = false;
 				}
 			}
+			if (bestSolution.m_solutionTrack) {
+				if (verbose) {
+					debugIndent = debugIndent.substring(3);
+					System.out.println(debugIndent + "Returning: " + bestSolution.toString()+ " " + bestSolution.isTrackSolvedtoString());
+				}
+				return bestSolution;
+			} 
 		}
 //	return minCost	
 		
