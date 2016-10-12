@@ -286,7 +286,6 @@ public class CMain {
 	static void printAnalysis (String algorihtm) throws Exception{
 		int totalCorrectGraphs = 0;
 		for (int i = 1; i < 26; i++) {
-			if (i==7)continue;
 			CGraph graph = new CGraph();
 			graph.Read("Tests/Grafo"+i+".txt");
 			CVisits visits = new CVisits();

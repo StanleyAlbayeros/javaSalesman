@@ -349,6 +349,7 @@ public class CGraph {
 		LinkedList<CVertex> visitList = visits.toCVertexList(this);		
 		//LinkedList<CVertex> originalVisitList = visits.toCVertexList(this);
 		HashSet<CVertex> originalVisitList = new HashSet<>();
+		int depth = 0;
 		for (CVertex tmp : visitList){
 			originalVisitList.add(tmp);
 		}
@@ -369,7 +370,7 @@ public class CGraph {
 		worstSolution.m_solutionTrack = false;
 		
 		try {
-			resultTrack = recursiveBacktracking(tmpTrack, worstSolution, visitList, originalVisitList, lastVertex);
+			resultTrack = recursiveBacktracking(tmpTrack, worstSolution, visitList, originalVisitList, lastVertex, depth);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			if (e.getMessage()=="best solution is not a solution track"){
@@ -381,17 +382,22 @@ public class CGraph {
 		
 	}
 
-	public CTrack recursiveBacktracking(CTrack partialSolution, CTrack bestSolution, LinkedList<CVertex> visitList, HashSet<CVertex> originalVisitList, CVertex lastVertex) throws Exception{
+	public CTrack recursiveBacktracking(CTrack partialSolution, CTrack bestSolution, LinkedList<CVertex> visitList, HashSet<CVertex> originalVisitList, CVertex lastVertex, int depth) throws Exception{
 //TODO the way partial solution arrives to this part is detrimental, it's so short that it instantly the best length, always.
     if (verbose) {
-      System.out.println(debugIndent + "VisitList: " + visitList.size() + " Entering with: " + partialSolution.toString());
+      System.out.println(debugIndent + "VisitList: " + visitList.size() + " Entering with depth: " + depth+ " and path: " + partialSolution.toString());
       debugIndent = debugIndent + "|  ";
-    }    
-    
+    }
+    if (depth > 1000){
+    	if (verbose) {
+            System.out.println(debugIndent + " We've run into a loop!");
+          }    
+    	throw new Exception(" Infinite loop, rolling back");
+    }
+
 		int visitElementIndex = 0;
 		boolean visitElementRemoved = false;
 		CTrack tmpTrack = new CTrack(this);
-		LinkedList<CVertex> exploreLater = new LinkedList<>();
 		
 //	if partial is a complete solution
 		if (visitList.isEmpty()){
@@ -419,7 +425,9 @@ public class CGraph {
 				}
 				throw new Exception("visitlist empty, not in last vertex");
 			}
-		} else {
+		}
+//	else 
+		else {
 //		for each possible option for the next choice to be made
 			boolean allVisited = true;
 			for (CVertex tmp : partialSolution.m_Vertices.getLast().m_Neighbords){
@@ -429,7 +437,6 @@ public class CGraph {
 				throw new Exception("No more neighbors");
 			}
 			
-			partialSolution.m_solutionTrack = false;
 			
 			for (CVertex tmpVertex : partialSolution.m_Vertices.getLast().m_Neighbords){
 //			do try that option, that is, change partial to incorporate this choice
@@ -451,25 +458,22 @@ public class CGraph {
 						continue;
 					}
 				 */
-
-				if ((partialSolution.m_Vertices.contains(tmpVertex))&& !(tmpVertex.m_allowedVisits>0)){
-					if (verbose) {
-						System.out.println(debugIndent + " Just passed this vertex, saving for later");
-					}
-					exploreLater.add(tmpVertex);
-					continue;						
-				}
 				if (visitList.contains(tmpVertex)){		
 					visitElementIndex = visitList.indexOf(tmpVertex);
 					visitElementRemoved = visitList.remove(tmpVertex);
-				} 
-				
+				} else {
+					if (partialSolution.m_Vertices.contains(tmpVertex)){
+						if (verbose) {
+							System.out.println(debugIndent + " Just passed this vertex, saving for later");
+						}
+					}
+				}
 				
 				
 				partialSolution.AddLast(tmpVertex);
 				tmpVertex.m_allowedVisits --;
 //			if partial cannot become better than minCost
-				if (partialSolution.Length() >= bestSolution.Length()){
+				if (partialSolution.Length() > bestSolution.Length()){
 //				then skip // prune
 					if (verbose) {
 						double distDiff = partialSolution.Length() - bestSolution.Length();
@@ -482,7 +486,7 @@ public class CGraph {
 						}
 						// else minCost ← min(minCost, Opt Backtrack(partial,best, visitlist))
 						try {
-							tmpTrack = recursiveBacktracking(partialSolution, bestSolution, visitList, originalVisitList, lastVertex);
+							tmpTrack = recursiveBacktracking(partialSolution, bestSolution, visitList, originalVisitList, lastVertex, depth+1);
 //							bestSolution = CTrack.minLength(bestSolution, tmpTrack, this);
 						} catch (Exception e) {
 							partialSolution.removeLast();
@@ -525,89 +529,6 @@ public class CGraph {
 					visitElementRemoved = false;
 				}
 			}
-			
-			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
-			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
-			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
-			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
-			
-			if (!exploreLater.isEmpty()) {
-				if (verbose) {
-			        System.out.println(debugIndent + "----EXPLORING LATER-----");
-				}
-				tmpTrack.Clear();
-				for (CVertex tmpVertex : exploreLater) {
-					if (visitList.contains(tmpVertex)) {
-						visitElementIndex = visitList.indexOf(tmpVertex);
-						visitElementRemoved = visitList.remove(tmpVertex);
-					}
-					partialSolution.AddLast(tmpVertex);
-					tmpVertex.m_allowedVisits--;
-					if (partialSolution.Length() >= bestSolution.Length()) {
-						if (verbose) {
-							double distDiff = partialSolution.Length() - bestSolution.Length();
-							System.out.println(debugIndent + distDiff + "----Explore Later---- longer, prunning");
-						}
-					} else {
-						if (tmpVertex.m_allowedVisits >= 0) {
-							if (tmpVertex.m_allowedVisits == 0) {
-								tmpVertex.m_VisitedVertex = true;
-							}
-							try {
-								tmpTrack = recursiveBacktracking(partialSolution, bestSolution,
-										visitList, originalVisitList, lastVertex);
-							} catch (Exception e) {
-								partialSolution.removeLast();
-								tmpVertex.m_allowedVisits++;
-								if (tmpVertex.m_allowedVisits > 0) {
-									tmpVertex.m_VisitedVertex = false;
-								}
-								if (visitElementRemoved) {
-									visitList.add(visitElementIndex, tmpVertex);
-									visitElementRemoved = false;
-								}
-								if (verbose) {
-									debugIndent = debugIndent.substring(3);
-									System.out.println(
-											debugIndent + "----Explore Later---- Caught exception: " + e.getMessage());
-								}
-								continue;
-							}
-							if (verbose) {
-								System.out.println(debugIndent
-										+ "-------------------------------------------------------------------------------");
-								System.out
-										.println(debugIndent + "----Explore Later---- Comparing" + bestSolution.toString()
-												+ " " + bestSolution.isTrackSolvedtoString()
-												+ " with " + tmpTrack.toString() + " "
-												+ tmpTrack.isTrackSolvedtoString());
-							}
-							bestSolution = CTrack.minLength(bestSolution, tmpTrack, this);
-							if (verbose) {
-								System.out
-										.println(debugIndent + "----Explore Later---- Result: " + bestSolution.toString()
-												+ " " + bestSolution.isTrackSolvedtoString());
-								System.out.println(debugIndent
-										+ "-------------------------------------------------------------------------------");
-							}
-						}
-					}
-					partialSolution.removeLast();
-					tmpVertex.m_allowedVisits++;
-					if (tmpVertex.m_allowedVisits > 0) {
-						tmpVertex.m_VisitedVertex = false;
-					}
-					if (visitElementRemoved) {
-						visitList.add(visitElementIndex, tmpVertex);
-						visitElementRemoved = false;
-					}
-				} 
-			}
-			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
-			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
-			/////////////////////////////////////////////////////////TODO EXPLORE LATER//////////////////////////////////////////////////////////////////////////////////////////
-
-			
 		}
 //	return minCost	
 		
