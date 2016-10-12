@@ -409,7 +409,6 @@ public class CGraph {
 			        System.out.println(debugIndent + "New best solution track: " + bestSolution.toString() + " " + bestSolution.isTrackSolvedtoString());
 			        System.out.println(debugIndent + "#####################################################################");
 			    }
-				bestSolution.m_solutionTrack  = true;
 				return bestSolution;
 				//throw new Exception("Path found");
 			} else {
@@ -436,7 +435,23 @@ public class CGraph {
 			for (CVertex tmpVertex : partialSolution.m_Vertices.getLast().m_Neighbords){
 //			do try that option, that is, change partial to incorporate this choice
 				
-				
+				/*VALE VALE CUANDO MIRO SI EL SIGUIENTE VERTICE YA LO HE VISITADO, HAGO MINLENGTH (RECURSIVE(PARTIALTALCUAL), RECUVSIVE(PARTIAL CON VERTICE REPETIDO, BEST)
+				 * 
+				 * 
+				 boolean getOut = true;
+					for (CVertex tmp : partialSolution.m_Vertices){
+						if (originalVisitList.contains(tmp)){
+							getOut = false;
+							break;
+						}
+					}
+					if (getOut) {
+						if (verbose) {
+							System.out.println(debugIndent + " Just passed this vertex, prunning");
+						}
+						continue;
+					}
+				 */
 				if (visitList.contains(tmpVertex)){		
 					visitElementIndex = visitList.indexOf(tmpVertex);
 					visitElementRemoved = visitList.remove(tmpVertex);
@@ -445,7 +460,6 @@ public class CGraph {
 					if (verbose) {
 						System.out.println(debugIndent + " Just passed this vertex, prunning");
 					}
-					continue;
 				}
 				}
 				partialSolution.AddLast(tmpVertex);
