@@ -63,12 +63,12 @@ public class CGraph {
 			p2 = new CVertex(x2, y2);
 			m_Vertices.add(p2);
 		}
-		if (!p1.m_Neighbords.contains(p2)){
-			p1.m_Neighbords.add(p2);
+		if (!p1.m_Neighbors.contains(p2)){
+			p1.m_Neighbors.add(p2);
 			p1.m_allowedVisits++;
 		}
-		if (!p2.m_Neighbords.contains(p1)){
-			p2.m_Neighbords.add(p1);
+		if (!p2.m_Neighbors.contains(p1)){
+			p2.m_Neighbors.add(p1);
 			p2.m_allowedVisits++;
 		}
 	}
@@ -76,7 +76,7 @@ public class CGraph {
 	public int nEdges() {
 		int n = 0;
 		for (int i = 0; i < m_Vertices.size(); ++i)
-			n = n + m_Vertices.get(i).m_Neighbords.size();
+			n = n + m_Vertices.get(i).m_Neighbors.size();
 		return n / 2;
 	}    
 	// Draw --------------------------------------------------------------------
@@ -87,7 +87,7 @@ public class CGraph {
 			CVertex p1 = m_Vertices.get(i);
 			int x1 = (int) Math.round(p1.m_Point.m_X * esc);
 			int y1 = (int) Math.round(p1.m_Point.m_Y * esc);
-			for (Iterator<CVertex> iter = p1.m_Neighbords.descendingIterator(); iter.hasNext();) {
+			for (Iterator<CVertex> iter = p1.m_Neighbors.descendingIterator(); iter.hasNext();) {
 				CPoint p2 = iter.next().m_Point;
 				g.drawLine(x1, y1, (int) Math.round(p2.m_X * esc), (int) Math.round(p2.m_Y * esc));
 			}
@@ -130,7 +130,7 @@ public class CGraph {
 		for (int i = 0; i < m_Vertices.size(); ++i) {
 			CVertex v = m_Vertices.get(i);
 			CPoint p1 = v.m_Point;
-			for (Iterator<CVertex> iter = v.m_Neighbords.iterator(); iter.hasNext();) {
+			for (Iterator<CVertex> iter = v.m_Neighbors.iterator(); iter.hasNext();) {
 				CPoint p2 = iter.next().m_Point;
 				bw.write(p1.m_X + " " + p1.m_Y + " " + p2.m_X + " " + p2.m_Y + "\n");
 			}
@@ -254,7 +254,7 @@ public class CGraph {
 		while ( vertexQ.peek() != null ) {
 			double minDist = maxValue;
 			double distToCurrent;
-			for (CVertex lookupVertex : currentVertex.m_Neighbords) {
+			for (CVertex lookupVertex : currentVertex.m_Neighbors) {
 				distToCurrent = lookupVertex.m_Point.Distance(currentVertex.m_Point) + currentVertex.m_DijkstraDistance;
 
 				if (distToCurrent < lookupVertex.m_DijkstraDistance) {					
@@ -304,7 +304,7 @@ public class CGraph {
 
 			double distToCurrent;
 
-			for (CVertex lookupVertex : currentVertex.m_Neighbords) {
+			for (CVertex lookupVertex : currentVertex.m_Neighbors) {
 				distToCurrent = lookupVertex.m_Point.Distance(currentVertex.m_Point) + currentVertex.m_DijkstraDistance;
 
 				if (distToCurrent < lookupVertex.m_DijkstraDistance) {
@@ -341,154 +341,270 @@ public class CGraph {
 	// =====================================================================================
 	// SalesmanTrackBacktracking
 	// -----------------------------------------------------------------
+	CTrack bestSolution;
+	double bestLength;
+	
 	public CTrack SalesmanTrackBacktracking(CVisits visits) throws Exception {
 //TODO
-		CTrack resultTrack = new CTrack(this);	
-		CTrack tmpTrack = new CTrack(this);		
-		CTrack worstSolution = new CTrack(this);		
-		LinkedList<CVertex> visitList = visits.toCVertexList(this);		
-		//LinkedList<CVertex> originalVisitList = visits.toCVertexList(this);
-		HashSet<CVertex> originalVisitList = new HashSet<>();
-		int depth = 0;
-		for (CVertex tmp : visitList){
-			originalVisitList.add(tmp);
+//		CTrack resultTrack = new CTrack(this);	
+//		CTrack tmpTrack = new CTrack(this);		
+//		CTrack worstSolution = new CTrack(this);		
+//		LinkedList<CVertex> visitList = visits.toCVertexList(this);		
+//		//LinkedList<CVertex> originalVisitList = visits.toCVertexList(this);
+//		HashSet<CVertex> originalVisitList = new HashSet<>();
+//		int depth = 0;
+//		for (CVertex tmp : visitList){
+//			originalVisitList.add(tmp);
+//		}
+//		CVertex firstVertex = visitList.getFirst();
+//		CVertex lastVertex = visitList.getLast();
+//		
+//		for (CVertex tmp : visitList){
+//			tmp.m_VertexToVisit = true;
+//		}		
+//
+//		visitList.remove(firstVertex);
+//		
+//		//TODO foo call backtrack
+//		for (CVertex tmp : this.m_Vertices){
+//			worstSolution.AddLast(tmp);
+//		}
+//		tmpTrack.AddFirst(firstVertex);
+//		worstSolution.m_solutionTrack = false;
+//		
+//		try {
+//			resultTrack = recursiveBacktracking(tmpTrack, worstSolution, visitList, originalVisitList, lastVertex, depth);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			if (e.getMessage()=="best solution is not a solution track"){
+//				throw new Exception("Can't solve this graph");
+//			}
+//		}
+		LinkedList<CVertex> visitList = visits.toCVertexList(this);
+		for (CVertex tmpVertex : visitList){
+			tmpVertex.m_VertexToVisit = true;
 		}
+		int visitCounter = visitList.size() - 1;
 		CVertex firstVertex = visitList.getFirst();
 		CVertex lastVertex = visitList.getLast();
+		firstVertex.m_VertexToVisit = false;
+		lastVertex.m_VertexToVisit = false;
 		
-		for (CVertex tmp : visitList){
-			tmp.m_VertexToVisit = true;
-		}		
-
-		visitList.remove(firstVertex);
+		bestSolution = new CTrack(this);
+		bestLength = Double.MAX_VALUE;
+		int depth = 0;
+		CBacktrackVertex currentPath = null;
+		CBacktrackVertex savedPath = null;
 		
-		//TODO foo call backtrack
-		for (CVertex tmp : this.m_Vertices){
-			worstSolution.AddLast(tmp);
+		recursiveBacktracking(currentPath, savedPath, firstVertex, 0.0, visitCounter, lastVertex, depth);
+		
+		return bestSolution;
+		
+	}
+	
+	void recursiveBacktracking(CBacktrackVertex currentPath, CBacktrackVertex savedPath, CVertex currentVertex,double currentLength, int visitCounter,CVertex lastVertex, int depth) 
+	{   
+		//////////////////DEBUG///////////////////////////////////////////////
+		if (verbose) {
+			debugIndent = debugIndent + "|  ";
+			System.out.println(debugIndent + "Entering new vertex");
 		}
-		tmpTrack.AddFirst(firstVertex);
-		worstSolution.m_solutionTrack = false;
-		
-		try {
-			resultTrack = recursiveBacktracking(tmpTrack, worstSolution, visitList, originalVisitList, lastVertex, depth);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			if (e.getMessage()=="best solution is not a solution track"){
-				throw new Exception("Can't solve this graph");
+		//////////////////DEBUG///////////////////////////////////////////////
+
+		// pruning
+		if ((currentLength>bestLength) || (depth>100)) {
+			//////////////////DEBUG///////////////////////////////////////////////
+			if (verbose) {
+				debugIndent = debugIndent.substring(3);
+				System.out.println(debugIndent + "Pruned a path: too long!");
+			}        
+			//////////////////DEBUG///////////////////////////////////////////////
+			return;
+		}
+		//////////////////DEBUG//////////////////////////////////////////////
+		if (verbose) {
+			System.out.println(debugIndent + "with visitCounter: " + visitCounter);
+		}
+		//////////////////DEBUG///////////////////////////////////////////////
+
+		// if the path has ended on thelast vertex AND we visited every vertex in the list,save it
+		if ((visitCounter== 1) && (currentVertex==lastVertex)) {     
+			
+			replaceBestSolution(currentPath, currentVertex, currentLength);
+			
+			//////////////////DEBUG///////////////////////////////////////////////
+			if (verbose) {
+				debugIndent = debugIndent.substring(3);
+				System.out.println(debugIndent + "#####################################################################");
+				System.out.println(debugIndent + "Potential solution: " + bestSolution.toString());
+				System.out.println(debugIndent + "#####################################################################");
+			}
+			//////////////////DEBUG///////////////////////////////////////////////
+			return;    		                                                           
+		}
+		// if the path hasn't ended, but our current vertex is in the visits list 
+		else if (currentVertex.m_VertexToVisit) {
+			
+			//if we haven't visited the current vertex, "save" a copy of our current path on savedPath			
+			if (!vertexHasBeenVisited(currentPath, currentVertex)){                                                             
+				--visitCounter;                                                                      
+				savedPath=currentPath;                                                              
 			}
 		}
-		
-		return resultTrack;
-		
+
+		//add a new head to our current path: currentVertex
+		currentPath=new CBacktrackVertex(currentPath,currentVertex);
+		//iterate over the neighbor list on currentVertex
+		for (CVertex currentNeighbor : currentVertex.m_Neighbors) {
+			//copy our current path with the currentvertex added
+			CBacktrackVertex tmpCurrentPath = currentPath; 
+			//navigate currentpath copy looking for the current neighbor, until we get to our previously saved path
+			while (tmpCurrentPath!=savedPath) {
+				//break the navigation if we find it
+				if (tmpCurrentPath.m_current == currentNeighbor) break;                                                  
+				tmpCurrentPath=tmpCurrentPath.m_previous;                                                            
+			}
+			//if we didn't find the neighbor between our current path and our saved path, do a recursive call
+			if (tmpCurrentPath==savedPath) {
+
+				//compute the new distance
+				double nextDistance = currentLength+currentVertex.m_Point.Distance(currentNeighbor.m_Point);
+				depth++;
+				//recursive call
+				recursiveBacktracking(currentPath,savedPath,currentNeighbor,nextDistance,visitCounter,lastVertex, depth); 
+			}
+		}
+		if (verbose) {
+			debugIndent = debugIndent.substring(3);
+			System.out.println(debugIndent + "Closing this branch");
+		}
+	}
+
+	private boolean vertexHasBeenVisited(CBacktrackVertex currentPath, CVertex currentVertex) {
+		//create a copy of our current path
+		CBacktrackVertex tmpCurrentPath=currentPath;
+		//navigate our way through the m_previous CVertex in the current path copy looking for current vertex
+		while (tmpCurrentPath!=null) {
+			//if we encounter the current vertex within our path, break the iteration
+			if (tmpCurrentPath.m_current==currentVertex) {
+				//and return true
+				return true;                                
+			}
+			tmpCurrentPath=tmpCurrentPath.m_previous;                                                               
+		}
+		//if we get to the end, it means we have not visited currentvertex in currentPath
+		return false;
+	}
+
+	private void replaceBestSolution(CBacktrackVertex currentPath, CVertex currentVertex, double currentLength) {
+		bestSolution.Clear();                                              
+		bestSolution.AddFirst(currentVertex);                                
+		CBacktrackVertex tmpCurrentPath=currentPath;                                             
+		while (tmpCurrentPath!=null) {                                                       
+			bestSolution.AddFirst(tmpCurrentPath.m_current);                                   
+			tmpCurrentPath=tmpCurrentPath.m_previous; 
+		}
+		bestLength=currentLength;
 	}
 
 	
-	public CTrack recursiveBacktracking(CTrack partialSolution, CTrack bestSolution, LinkedList<CVertex> visitList, HashSet<CVertex> originalVisitList, CVertex lastVertex, int depth) throws Exception{
-//TODO the way partial solution arrives to this part is detrimental, it's so short that it instantly the best length, always.
-    if (verbose) {
-      System.out.println(debugIndent + "VisitList: " + visitList.size() + " Entering with depth: " + depth+ " and path: " + partialSolution.toString());
-      debugIndent = debugIndent + "|  ";
-    }
-		
-//	if partial is a complete solution
-		if (visitList.isEmpty()){
-			if(partialSolution.m_Vertices.getLast() == lastVertex){
-//		then minCost = min(minCost,the cost of the solution represented by partial)
-//			partialSolution.AddLast(lastVertex);
-				partialSolution.m_solutionTrack = true ;
+
+	public CTrack recursiveBacktracking2(CTrack partialSolution, CTrack bestSolution,
+			LinkedList<CVertex> visitList, HashSet<CVertex> originalVisitList, CVertex lastVertex,
+			int depth) throws Exception {
+		// TODO the way partial solution arrives to this part is detrimental, it's so short that it
+		// instantly the best length, always.
+		if (verbose) {
+			System.out.println(
+					debugIndent + "VisitList: " + visitList.size() + " Entering with depth: "
+							+ depth + " and path: " + partialSolution.toString());
+			debugIndent = debugIndent + "|  ";
+		}
+
+		// if partial is a complete solution
+		if (visitList.isEmpty()) {
+			if (partialSolution.m_Vertices.getLast() == lastVertex) {
+
+				partialSolution.m_solutionTrack = true;
 				if (verbose) {
 					debugIndent = debugIndent.substring(3);
-			        System.out.println(debugIndent + "#####################################################################");
-			        System.out.println(debugIndent + "Potential solution track: " + partialSolution.toString() + " " + partialSolution.isTrackSolvedtoString());
-//			        System.out.println(debugIndent + "Previous best solution track: " + bestSolution.toString() + " " + bestSolution.isTrackSolvedtoString());
-//			    }
-//				bestSolution = CTrack.minLength(bestSolution, partialSolution, this);
-//				if (verbose) {
-//			        System.out.println(debugIndent + "New best solution track: " + bestSolution.toString() + " " + bestSolution.isTrackSolvedtoString());
-			        System.out.println(debugIndent + "#####################################################################");
-			    }
+					System.out.println(debugIndent
+							+ "#####################################################################");
+					System.out.println(
+							debugIndent + "Potential solution track: " + partialSolution.toString()
+									+ " " + partialSolution.isTrackSolvedtoString());
+					System.out.println(debugIndent
+							+ "#####################################################################");
+				}
 				return partialSolution;
-				//throw new Exception("Path found");
+				// throw new Exception("Path found");
 			} else {
-				//TODO HOW TO EXIT IF IT'S EMPTY BUT THE LAST VERTEX ISN'T THE LAST TO VISIT -> EXCEPTIONS!
+				// TODO HOW TO EXIT IF IT'S EMPTY BUT THE LAST VERTEX ISN'T THE LAST TO VISIT ->
+				// EXCEPTIONS!
 				if (verbose) {
-					System.out.println(debugIndent + "Empty but I'm not the last vertex you should visit.");
+					System.out.println(
+							debugIndent + "Empty but I'm not the last vertex you should visit.");
 				}
 				throw new Exception("visitlist empty, not in last vertex");
 			}
 		}
-//	else 
+		// else
 		else {
-//		for each possible option for the next choice to be made
-		    if (depth > (originalVisitList.size()*10)){
-		    	if (verbose) {
-		            System.out.println(debugIndent + " We've run into a loop!");
-		          }    
-		    	throw new Exception(" Infinite loop, rolling back");
-		    }
+			// for each possible option for the next choice to be made
+			if (depth > (originalVisitList.size() * 10)) {
+				if (verbose) {
+					System.out.println(debugIndent + " We've run into a loop!");
+				}
+				throw new Exception(" Infinite loop, rolling back");
+			}
 			boolean allVisited = true;
-			for (CVertex tmp : partialSolution.m_Vertices.getLast().m_Neighbords){
+			for (CVertex tmp : partialSolution.m_Vertices.getLast().m_Neighbors) {
 				allVisited = (tmp.m_VisitedVertex && allVisited);
 			}
-			if (allVisited){
+			if (allVisited) {
 				throw new Exception("No more neighbors");
 			}
 			int visitElementIndex = 0;
 			boolean visitElementRemoved = false;
-			CTrack tmpTrack = new CTrack(this);			
-			for (CVertex tmpVertex : partialSolution.m_Vertices.getLast().m_Neighbords){
-//			do try that option, that is, change partial to incorporate this choice
-				
-				/*VALE VALE CUANDO MIRO SI EL SIGUIENTE VERTICE YA LO HE VISITADO, HAGO MINLENGTH (RECURSIVE(PARTIALTALCUAL), RECUVSIVE(PARTIAL CON VERTICE REPETIDO, BEST)
-				 * 
-				 * 
-				 boolean getOut = true;
-					for (CVertex tmp : partialSolution.m_Vertices){
-						if (originalVisitList.contains(tmp)){
-							getOut = false;
-							break;
-						}
-					}
-					if (getOut) {
-						if (verbose) {
-							System.out.println(debugIndent + " Just passed this vertex, prunning");
-						}
-						continue;
-					}
-				 */
-				if (visitList.contains(tmpVertex)){		
+			CTrack tmpTrack = new CTrack(this);
+			for (CVertex tmpVertex : partialSolution.m_Vertices.getLast().m_Neighbors) {
+
+				if (visitList.contains(tmpVertex)) {
 					visitElementIndex = visitList.indexOf(tmpVertex);
 					visitElementRemoved = visitList.remove(tmpVertex);
 				} else {
-					if (partialSolution.m_Vertices.contains(tmpVertex)){
+					if (partialSolution.m_Vertices.contains(tmpVertex)) {
 						if (verbose) {
-							System.out.println(debugIndent + " Just passed this vertex, saving for later");
+							System.out.println(
+									debugIndent + " Just passed this vertex, saving for later");
 							continue;
 						}
 					}
 				}
-				
-				
-				tmpVertex.m_allowedVisits --;
+
+
+				tmpVertex.m_allowedVisits--;
 				partialSolution.AddLast(tmpVertex);
-//			if partial cannot become better than minCost
-				if ((partialSolution.Length() > bestSolution.Length()) && bestSolution.m_solutionTrack){
-//				then skip // prune
+				// if partial cannot become better than minCost
+				if ((partialSolution.Length() > bestSolution.Length())
+						&& bestSolution.m_solutionTrack) {
+					// then skip // prune
 					if (verbose) {
 						double distDiff = partialSolution.Length() - bestSolution.Length();
-						System.out.println(debugIndent + distDiff+" longer, prunning");
+						System.out.println(debugIndent + distDiff + " longer, prunning");
 					}
 				} else {
 					if ((tmpVertex.m_allowedVisits >= 0)) {
 						if (tmpVertex.m_allowedVisits == 0) {
 							tmpVertex.m_VisitedVertex = true;
 						}
-						// else minCost ← min(minCost, Opt Backtrack(partial,best, visitlist))
+
 						try {
-							tmpTrack = recursiveBacktracking(partialSolution, bestSolution, visitList, originalVisitList, lastVertex, depth+1);
-//							bestSolution = CTrack.minLength(bestSolution, tmpTrack, this);
+							tmpTrack = recursiveBacktracking2(partialSolution, bestSolution,
+									visitList, originalVisitList, lastVertex, depth + 1);
+							// bestSolution = CTrack.minLength(bestSolution, tmpTrack, this);
 						} catch (Exception e) {
-							
+
 							partialSolution.removeLast();
 							tmpVertex.m_allowedVisits++;
 							if (tmpVertex.m_allowedVisits > 0) {
@@ -500,55 +616,62 @@ public class CGraph {
 							}
 							if (verbose) {
 								debugIndent = debugIndent.substring(3);
-								System.out.println(debugIndent + "Caught exception: " + e.getMessage());
+								System.out.println(
+										debugIndent + "Caught exception: " + e.getMessage());
 							}
 
 							continue;
 						}
 						if (verbose) {
-					        System.out.println(debugIndent + "-------------------------------------------------------------------------------");
-							System.out.println(debugIndent + "Comparing" + bestSolution.toString()+" "+ bestSolution.isTrackSolvedtoString() + " with " + tmpTrack.toString() + " " + tmpTrack.isTrackSolvedtoString());
+							System.out.println(debugIndent
+									+ "-------------------------------------------------------------------------------");
+							System.out.println(debugIndent + "Comparing" + bestSolution.toString()
+									+ " " + bestSolution.isTrackSolvedtoString() + " with "
+									+ tmpTrack.toString() + " " + tmpTrack.isTrackSolvedtoString());
 						}
-						
+
 						bestSolution = CTrack.minLength(bestSolution, tmpTrack, this);
-						
+
 						if (verbose) {
-							System.out.println(debugIndent + "Result: " + bestSolution.toString() + " " + bestSolution.isTrackSolvedtoString() );
-					        System.out.println(debugIndent + "-------------------------------------------------------------------------------");
+							System.out.println(debugIndent + "Result: " + bestSolution.toString()
+									+ " " + bestSolution.isTrackSolvedtoString());
+							System.out.println(debugIndent
+									+ "-------------------------------------------------------------------------------");
 						}
 					}
 				}
-//			change partial back to undo the choice made at the for each's start
-				
+				// change partial back to undo the choice made at the for each's start
+
 				tmpVertex.m_allowedVisits++;
 				partialSolution.removeLast();
-				if (tmpVertex.m_allowedVisits>0) {
+				if (tmpVertex.m_allowedVisits > 0) {
 					tmpVertex.m_VisitedVertex = false;
 				}
-				if (visitElementRemoved){
+				if (visitElementRemoved) {
 					visitList.add(visitElementIndex, tmpVertex);
 					visitElementRemoved = false;
 				}
 			}
 		}
-//	return minCost	
-		
+		// return minCost
+
 		if (bestSolution.m_solutionTrack) {
 			if (verbose) {
 				debugIndent = debugIndent.substring(3);
-				System.out.println(debugIndent + "Returning: " + bestSolution.toString()+ " " + bestSolution.isTrackSolvedtoString());
+				System.out.println(debugIndent + "Returning: " + bestSolution.toString() + " "
+						+ bestSolution.isTrackSolvedtoString());
 			}
 			return bestSolution;
-		} else { 
-			
+		} else {
+
 			throw new Exception("best solution is not a solution track");
-//			return partialSolution;
+			// return partialSolution;
 		}
-		
+
 	}
 	
 	
-	public CTrack RecursiveBacktracking2(CVertex currentVertex , CVertex lastVertex, LinkedList<CVertex> visits) throws Exception{
+	public CTrack RecursiveBacktracking3(CVertex currentVertex , CVertex lastVertex, LinkedList<CVertex> visits) throws Exception{
 //TODO
 		CTrack resultTrackSection = new CTrack(this);
 	    if (verbose) {
@@ -582,8 +705,8 @@ public class CGraph {
 				resultTrackSection.Clear();
 			}			
 		} else {
-			if (currentVertex.m_Neighbords.size() > 1) {
-				for (CVertex tmpCurrent : currentVertex.m_Neighbords) {
+			if (currentVertex.m_Neighbors.size() > 1) {
+				for (CVertex tmpCurrent : currentVertex.m_Neighbors) {
 					
 					if (!tmpCurrent.m_VisitedVertex) {
 						tmpCurrent.m_allowedVisits--;
@@ -591,7 +714,7 @@ public class CGraph {
 							tmpCurrent.m_VisitedVertex = true;
 //TODO puede que tenga que devolver tracks parciales?
 						} else if (tmpCurrent.m_allowedVisits >= 0) {
-							CTrack nextTempTrack = RecursiveBacktracking2(tmpCurrent, lastVertex, visits);
+							CTrack nextTempTrack = RecursiveBacktracking3(tmpCurrent, lastVertex, visits);
 							if(visits.remove(tmpCurrent)){
 								if (verbose) {
 									debugIndent = debugIndent.substring(3);

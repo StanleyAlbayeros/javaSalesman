@@ -85,7 +85,7 @@ public class CTrack {
 			int x1=(int) Math.round(p.m_X*esc);
 			int y1=(int) Math.round(p.m_Y*esc);
 			if (x0!=-9999) {
-				if (v0.m_Neighbords.contains(v1)) g.setColor(new Color(0,200,0));
+				if (v0.m_Neighbors.contains(v1)) g.setColor(new Color(0,200,0));
 				else g.setColor(new Color(200,0,0));
 				Stroke stroke=g.getStroke();
 				g.setStroke(new BasicStroke(3));

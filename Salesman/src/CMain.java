@@ -70,7 +70,7 @@ public class CMain {
 		while (nEdges>0) {
 			int i=(int) (Math.random()*nVertices);
 			int j=(int) (Math.random()*nVertices);
-			if (i!=j && !g.GetVertex(vertices[i]).m_Neighbords.contains(g.GetVertex(vertices[j]))) {
+			if (i!=j && !g.GetVertex(vertices[i]).m_Neighbors.contains(g.GetVertex(vertices[j]))) {
 				g.Add(vertices[i].m_X,vertices[i].m_Y, vertices[j].m_X,vertices[j].m_Y);
 				--nEdges;				
 			}
@@ -468,7 +468,7 @@ public class CMain {
 						track = graph.SalesmanTrackBacktracking(visits);
 						t1 = System.nanoTime();
 						if (debug){
-							int i = 1;
+							int i = 6;
 							track2.Read("Tests/TrackOptimo" + i + ".txt");
 						}
 					} else if (algorihtm.toLowerCase().equals("backtrackinggreedy")) {
