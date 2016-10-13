@@ -221,7 +221,7 @@ public class CTrack {
     }
 	public int Compare(CTrack track2) {
 		int errors=0;
-		for (int i = 0; i < track2.m_Vertices.size(); i++) {
+		for (int i = 0; i < m_Vertices.size(); i++) {
 			
 			if (m_Vertices.get(i)!=track2.m_Vertices.get(i)){
 				errors++;				
