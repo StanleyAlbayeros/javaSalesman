@@ -36,6 +36,7 @@ public class CMain {
 		for (int i=0;i<NIAS.length; ++i) if (nia.equals(NIAS[i])) return true;
 		return false;
 	}
+	
 	// RandomGraph -------------------------------------------------------------
 	public static CGraph RandomGraph(int nVertices,int nEdges) throws Exception 
 	{
@@ -94,6 +95,7 @@ public class CMain {
 		}
 		return visits;
 	}
+	
 	// CiclicRamdomVisits ------------------------------------------------------------
 	public static CVisits CiclicRandomVisits(CGraph g,int nVisits) throws Exception 
 	{
@@ -111,6 +113,7 @@ public class CMain {
 		visits.Add(p.m_X, p.m_Y);
 		return visits;
 	}
+	
 	// SaveRandomProblem -----------------------------------------------------------
 	static void SaveRandomProblem(int n,int nVertices, int nEdges, int nVisits) 
 	{

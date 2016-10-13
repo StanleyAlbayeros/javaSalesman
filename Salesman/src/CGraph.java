@@ -235,7 +235,7 @@ public class CGraph {
 	 */
 	public void Dijkstra(CVertex start){
 		
-		double maxValue = 99999999;
+		double maxValue = Double.MAX_VALUE;
 
 		LinkedList<CVertex> vertexQ = new LinkedList<CVertex>();
 		
@@ -345,41 +345,7 @@ public class CGraph {
 	double bestLength;
 	
 	public CTrack SalesmanTrackBacktracking(CVisits visits) throws Exception {
-//TODO
-//		CTrack resultTrack = new CTrack(this);	
-//		CTrack tmpTrack = new CTrack(this);		
-//		CTrack worstSolution = new CTrack(this);		
-//		LinkedList<CVertex> visitList = visits.toCVertexList(this);		
-//		//LinkedList<CVertex> originalVisitList = visits.toCVertexList(this);
-//		HashSet<CVertex> originalVisitList = new HashSet<>();
-//		int depth = 0;
-//		for (CVertex tmp : visitList){
-//			originalVisitList.add(tmp);
-//		}
-//		CVertex firstVertex = visitList.getFirst();
-//		CVertex lastVertex = visitList.getLast();
-//		
-//		for (CVertex tmp : visitList){
-//			tmp.m_VertexToVisit = true;
-//		}		
-//
-//		visitList.remove(firstVertex);
-//		
-//		//TODO foo call backtrack
-//		for (CVertex tmp : this.m_Vertices){
-//			worstSolution.AddLast(tmp);
-//		}
-//		tmpTrack.AddFirst(firstVertex);
-//		worstSolution.m_solutionTrack = false;
-//		
-//		try {
-//			resultTrack = recursiveBacktracking(tmpTrack, worstSolution, visitList, originalVisitList, lastVertex, depth);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			if (e.getMessage()=="best solution is not a solution track"){
-//				throw new Exception("Can't solve this graph");
-//			}
-//		}
+
 		LinkedList<CVertex> visitList = visits.toCVertexList(this);
 		for (CVertex tmpVertex : visitList){
 			tmpVertex.m_VertexToVisit = true;
@@ -412,7 +378,7 @@ public class CGraph {
 		//////////////////DEBUG///////////////////////////////////////////////
 
 		// pruning
-		if ((currentLength>bestLength) || (depth>100)) {
+		if ((currentLength>bestLength)) {
 			//////////////////DEBUG///////////////////////////////////////////////
 			if (verbose) {
 				debugIndent = debugIndent.substring(3);
