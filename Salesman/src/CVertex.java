@@ -20,5 +20,7 @@ public class CVertex {
 		m_allowedVisits = 0;
 		m_VisitedVertex = false;
 	}
+	public void clearDijkstra(){
+	}
 
 }

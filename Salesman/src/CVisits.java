@@ -3,6 +3,7 @@ import java.awt.Graphics;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -123,10 +124,25 @@ public class CVisits {
     	String str="[";
 		for (Iterator<CPoint> iter=m_Points.iterator(); iter.hasNext();) {
 			CPoint p=iter.next();
-   			str=str  + "(" + p.m_X + "," + p.m_Y + ")";
-   			if (iter.hasNext()) str=str + ",";
+			str=str  + "(" + p.m_X + "," + p.m_Y + ")";
+			if (iter.hasNext()) str=str + ",";
 		}		
 		return str+ "]";
+    }
+    public ArrayDeque<CVertex> toArrayDeque(CGraph graph) {
+
+    	ArrayDeque<CVertex> result = new ArrayDeque<CVertex>();
+
+    	for (CPoint currentPoint : m_Points){
+
+    		try {
+    			result.add(graph.GetVertex(currentPoint));
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}			
+    	}
+
+    	return result;	
     }
 
 }

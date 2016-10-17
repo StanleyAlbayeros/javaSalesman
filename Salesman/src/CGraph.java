@@ -282,7 +282,7 @@ public class CGraph {
 	// DijkstraQueue
 	// -------------------------------------------------------------------
 	public void DijkstraQueue(CVertex start) throws Exception {
-		double maxValue = 99999999; 
+		double maxValue = Double.MAX_VALUE; 
 
 		Comparator<CVertex> vertexCompare = new VertexCompare();
 		PriorityQueue<CVertex> vertexQ = new PriorityQueue<CVertex>(vertexCompare);
@@ -292,6 +292,7 @@ public class CGraph {
 		for (CVertex vert : this.m_Vertices) {
 			vert.m_DijkstraDistance = maxValue;
 			vert.m_DijkstraVisit = false;
+			vert.m_DijkstraPrevious = null;
 		}
 
 		start.m_DijkstraDistance = 0;
@@ -330,9 +331,72 @@ public class CGraph {
 
 	// SalesmanTrackGreedy
 	// -----------------------------------------------------------
+
 	public CTrack SalesmanTrackGreedy(CVisits visits) throws Exception {
-		// IMPLEMENTAR LA FUNCION
-		throw new Exception("SalesmanTrackGreedy no implementado");
+		bestLength = 0.0;
+		CTrack resultTrack = new CTrack(this);		
+		ArrayDeque<CVertex> visitList = visits.toArrayDeque(this);		
+		for (CVertex tmp : visitList){
+			tmp.m_VertexToVisit = true;
+		}
+		
+		CVertex currentVertex = visitList.pollFirst();
+		CVertex nextVertex = visitList.peekFirst();
+		CVertex lastVertex = visitList.peekLast();
+		
+		resultTrack.AddFirst(currentVertex);
+		
+		while(nextVertex != null){
+			if (verbose) {
+		        System.out.println(debugIndent + "Entering solvable ");
+		        debugIndent = debugIndent + "|  ";
+		    }
+
+			visitList.remove(currentVertex);
+			
+			CTrack tempTrack = new CTrack(this);
+			this.DijkstraQueue(currentVertex);
+
+			for (CVertex temp : visitList){
+				if ((temp!=lastVertex) && (temp.m_DijkstraDistance <= nextVertex.m_DijkstraDistance)){
+					nextVertex = temp;
+					if (verbose) {
+						debugIndent = debugIndent.substring(3);
+				        System.out.println(debugIndent + "found best tmp vertex ");
+				        debugIndent = debugIndent + "|  ";
+				    }
+				}
+			}
+		
+			tempTrack=getGreedyTrack(currentVertex,nextVertex);
+			bestLength = bestLength + nextVertex.m_DijkstraDistance;
+			visitList.remove(nextVertex);
+
+			resultTrack.Append(tempTrack);
+			currentVertex = nextVertex;
+			nextVertex = visitList.peekFirst();
+		}
+		
+		
+		return resultTrack;		
+	}
+	
+	public CTrack getGreedyTrack(CVertex start, CVertex last) throws Exception{
+		
+		CTrack tempTrack = new CTrack(this);
+		if (start == last){
+			tempTrack.AddFirst(start);
+			return tempTrack;
+		}
+		CVertex tmpVertex = last;
+		
+		tempTrack.AddFirst(tmpVertex);
+		while (tmpVertex.m_DijkstraPrevious != start){
+			tmpVertex.m_VertexToVisit = false;
+			tmpVertex = tmpVertex.m_DijkstraPrevious;
+			tempTrack.AddFirst(tmpVertex);
+		}		
+		return tempTrack;
 	}
 
 	// =====================================================================================
@@ -408,10 +472,12 @@ public class CGraph {
 			//////////////////DEBUG///////////////////////////////////////////////
 			return;    		                                                           
 		}
+		
 		// if the path hasn't ended, but our current vertex is in the visits list 
 		else if (currentVertex.m_VertexToVisit) {
 			
-			//if we haven't visited the current vertex, "save" a copy of our current path on savedPath			
+			//if we haven't visited the current vertex, "save" a copy of our current path on savedPath
+			// this serves as our backtracking checkpoint
 			if (!vertexHasBeenVisited(currentPath, currentVertex)){                                                             
 				--visitCounter;                                                                      
 				savedPath=currentPath;                                                              
@@ -432,7 +498,6 @@ public class CGraph {
 			}
 			//if we didn't find the neighbor between our current path and our saved path, do a recursive call
 			if (tmpCurrentPath==savedPath) {
-
 				//compute the new distance
 				double nextDistance = currentLength+currentVertex.m_Point.Distance(currentNeighbor.m_Point);
 				depth++;
@@ -740,179 +805,107 @@ public class CGraph {
 	 * @throws Exception
 	 */
 	public CTrack SalesmanTrackBacktrackingGreedy(CVisits visits) throws Exception {
+
+		bestSolution = new CTrack(this);
+		bestSolution = SalesmanTrackGreedy(visits);
 		
-		CTrack resultTrack = new CTrack(this);		
 		LinkedList<CVertex> visitList = visits.toCVertexList(this);
-		
-//		Ugly code, nevermind this. Keeping it for future reference.
-//		for (CVertex currentStart : visitList) {
-//			
-//			CTrack tempResult = new CTrack(this);		
-//			
-//			System.out.print(currentStart.m_DijkstraDistance + " start distancia\n");
-//			if (i<(visitList.size()-1)){
-//				CVertex nextVertex = visitList.get(i);
-//				this.DijkstraQueue(currentStart);							
-//			
-//				while (nextVertex.m_DijkstraPrevious != currentStart) {
-//					CVertex step = nextVertex.m_DijkstraPrevious;
-//					System.out.print(nextVertex.m_DijkstraDistance + " distancia\n");
-//					tempResult.AddLast(step);
-//					nextVertex = step.m_DijkstraPrevious;
-//				}
-//			 
-//			}
-//			else {
-//				CVertex nextVertex = visitList.getLast();
-//				this.DijkstraQueue(currentStart);
-//				tempResult.AddLast(nextVertex.m_DijkstraPrevious);				
-//			}
-//				
-//			i++;
-//			result.Append(tempResult);
-//		}
-///////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////		
-		
-//TODO dijkstra implementation
-		
-		for (CVertex tmp : visitList){
-			tmp.m_VertexToVisit = true;
+		LinkedList<CVertex> visitedList = new LinkedList<>();
+		for (CVertex tmpVertex : visitList){
+			tmpVertex.m_VertexToVisit = true;
 		}
 		
-		CVertex currentVertex = visitList.pollFirst();
-		CVertex nextVertex = visitList.peekFirst();
-		CVertex lastVertex = visitList.peekLast();
+		int visitsCount = visitList.size();
+		visitList.peekFirst().m_VertexToVisit=false;
+		visitList.peekLast().m_VertexToVisit=false;
+		CVertex lastVertex = visitList.pollLast();
+		CVertex firstVertex = visitList.pollFirst();
+		visitedList.add(firstVertex);
 		
-		resultTrack.AddFirst(currentVertex);
+		CTrack currentTrack = new CTrack(this);
+		currentTrack.AddFirst(firstVertex);
+		visitsCount--;
 		
-		while(nextVertex != null){
-			if (verbose) {
-		        System.out.println(debugIndent + "Entering solvable ");
-		        debugIndent = debugIndent + "|  ";
-		    }
-
-			visitList.remove(currentVertex);
-			
-			CTrack tempTrack = new CTrack(this);
-			this.DijkstraQueue(currentVertex);
-
-			for (CVertex temp : visitList){
-				if ((temp!=lastVertex) && (temp.m_DijkstraDistance <= nextVertex.m_DijkstraDistance)){
-					nextVertex = temp;
-					if (verbose) {
-						debugIndent = debugIndent.substring(3);
-				        System.out.println(debugIndent + "found best tmp vertex ");
-				        debugIndent = debugIndent + "|  ";
-				    }
-				}
-			}
+		recursiveBacktrackingGreedy(currentTrack, firstVertex, 0.0, visitList, lastVertex, visitedList, visitsCount);
 		
-			tempTrack=getDijkstraTrack(currentVertex,nextVertex);
-			
-			visitList.remove(nextVertex);
-
-//			for (CVertex tmp : visitList){
-//				tempTrack = getDijkstraTrack(currentVertex,tmp);
-//			}
-			
-//			for (CVertex tmp : tempTrack.m_Vertices){
-//				if (tmp.m_VertexToVisit == false){
-//					visitList.remove(tmp);
-//				}
-//			}
-			
-
-			resultTrack.Append(tempTrack);
-			currentVertex = nextVertex;
-			nextVertex = visitList.peekFirst();
-		}
+		return bestSolution;
 		
-///////////////////////////////////////////////////////////////////////////////////////		
-///////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////more ugly code, don't look////////////////////////////////////		
-///////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////		
-
-		/*
-		CVertex lastVertex = visitList.getLast();
-		CVertex currentVertex = visitList.getFirst();
-		//resultTrack.AddFirst( visitList.getFirst());
-		boolean finish = false ;
-		
-		Comparator<CTrack> resultCompare = new TrackCompare();
-		PriorityQueue<CTrack> resultTQ = new PriorityQueue<CTrack>(resultCompare);
-		Comparator<CTrack> tmpTComparator = new TrackCompare();
-		PriorityQueue<CTrack> tmpTQ = new PriorityQueue<CTrack>(tmpTComparator);
-		
-		while (currentVertex!=null){			
-			
-
-
-			ListIterator<CVertex> vertexIterator = visitList.listIterator();
-			
-			System.out.println("kek\n");
-			
-
-			if (currentVertex == lastVertex){
-				finish = true;
-			}
-			
-			for (CVertex nextVertex : visitList){
-				CTrack tmpTrack = getDijkstraTrack(currentVertex, nextVertex);
-				tmpTQ.offer(tmpTrack);
-			}
-			
-			CTrack bestTrack = tmpTQ.poll();
-			if (finish && bestTrack!=null){
-				resultTrack.Append(bestTrack);
-				return resultTrack;
-				
-			} else if (!finish){
-				if (bestTrack != null){
-					boolean badPath = false;
-					
-					for (CVertex iter : bestTrack.m_Vertices){
-						if (resultTrack.m_Vertices.contains(iter)){
-							badPath = true;
-						}
-					}
-					
-					if (!badPath){
-//						resultTQ.offer(bestTrack.AppendBefore(t);
-						currentVertex = bestTrack.m_Vertices.getLast();
-						visitList.remove(currentVertex);
-					}
-					if (badPath){
-						bestTrack = resultTQ.poll();
-						currentVertex = bestTrack.m_Vertices.getLast();
-						visitList.remove(currentVertex);
-						tmpTQ.clear();
-					}
-				}
-			}
-			
-			resultTrack.Append(bestTrack);
-			//
-			
-			//start
-				//getdijkstratrack desde current a todo visits excepto last
-					//if newtrack.length <= mintrack.length
-						
-			//guarda el track
-				//current.m_VertexToVisit = true
-				//current = 	
-					
-			
-		}
-*/
-		
-		
-		return resultTrack;		
 	}
+	
+	void recursiveBacktrackingGreedy(CTrack currentTrack, CVertex currentVertex,
+			double currentLength, LinkedList<CVertex> visitList,CVertex lastVertex,
+			LinkedList<CVertex> visitedList, int visitsCount) throws Exception 
+	{   
+		//////////////////DEBUG///////////////////////////////////////////////
+		if (verbose) {
+			debugIndent = debugIndent + "|  ";
+			System.out.println(debugIndent + "Entering new vertex");
+		}
+		//////////////////DEBUG///////////////////////////////////////////////
+		
+		// pruning
+		this.DijkstraQueue(currentVertex);
+		if (((currentLength+lastVertex.m_DijkstraDistance)>bestLength)) {
+			//////////////////DEBUG///////////////////////////////////////////////
+			if (verbose) {
+				debugIndent = debugIndent.substring(3);
+				System.out.println(debugIndent + "Pruned a path: too long!");
+			}        
+			//////////////////DEBUG///////////////////////////////////////////////
+			return;
+		}
+		//////////////////DEBUG//////////////////////////////////////////////
+		if (verbose) {
+			System.out.println(debugIndent + "with visitCounter: " + visitsCount);
+		}
+		//////////////////DEBUG///////////////////////////////////////////////
+
+		
+		// if the path has ended on thelast vertex AND we visited every vertex in the list,save it
+		if ((visitsCount== 1)) {
+			
+			currentTrack.Append(getDijkstraTrack(currentVertex, lastVertex));
+			bestSolution = currentTrack;
+			bestLength = currentLength+lastVertex.m_DijkstraDistance;
+			//////////////////DEBUG///////////////////////////////////////////////
+			if (verbose) {
+				debugIndent = debugIndent.substring(3);
+				System.out.println(debugIndent + "#####################################################################");
+				System.out.println(debugIndent + "Potential solution: " + bestSolution.toString());
+				System.out.println(debugIndent + "#####################################################################");
+			}
+			//////////////////DEBUG///////////////////////////////////////////////
+			return;    		                                                           
+		}
+
+		//add a new head to our current path: currentVertex
+		//iterate over the neighbor list on currentVertex
+		for (CVertex nextVisit : visitList) {
+
+			if (!visitedList.contains(nextVisit)) {
+				this.DijkstraQueue(currentVertex);
+				double nextDistance = nextVisit.m_DijkstraDistance + currentLength;
+				if (nextDistance > bestLength){
+					continue;
+				}
+				visitedList.addLast(nextVisit);
+				CTrack tempTrack = new CTrack(this);
+				tempTrack.Append(currentTrack);
+				tempTrack.Append(getDijkstraTrack(currentVertex, nextVisit));
+				recursiveBacktrackingGreedy(tempTrack, nextVisit, nextDistance, visitList,lastVertex, visitedList, visitsCount - 1);
+				visitedList.removeLast();
+			}
+			
+		}
+		if (verbose) {
+			debugIndent = debugIndent.substring(3);
+			System.out.println(debugIndent + "Closing this branch");
+		}
+		
+		return;
+	}
+
+
 	
 	public CTrack getDijkstraTrack(CVertex start, CVertex last) throws Exception{
 		

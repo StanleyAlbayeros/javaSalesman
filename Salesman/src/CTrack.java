@@ -43,6 +43,9 @@ public class CTrack {
 	}
 	public void removeLast(){
 		m_Vertices.removeLast();
+	}	
+	public void removeFirst(){
+		m_Vertices.removeFirst();
 	}
 	public void AddFirst(CVertex v) {
 		assert m_Graph.MemberP(v);

@@ -9,7 +9,7 @@ public class CMain {
 	static final boolean testDijkstra = false;
 	static final boolean testDijkstraTests = false;
 	static final boolean generateRandomDijkstra = false;
-	static final boolean autoAlgorithmTest = true;
+	static final boolean autoAlgorithmTest = false;
 	static final boolean debug = false;
 	///////////////////debug variables///////////////////
 	
@@ -288,7 +288,15 @@ public class CMain {
 	 */
 	static void printAnalysis (String algorihtm) throws Exception{
 		int totalCorrectGraphs = 0;
-		for (int i = 1; i < 26; i++) {
+		int maxGraphs;
+		if (algorihtm.toLowerCase().equals("backtracking")){
+			maxGraphs = 5;
+		} else {
+			maxGraphs = 25;
+		}
+
+		long totalT=0;
+		for (int i = 1; i < maxGraphs+1; i++) {
 			CGraph graph = new CGraph();
 			graph.Read("Tests/Grafo"+i+".txt");
 			CVisits visits = new CVisits();
@@ -311,6 +319,8 @@ public class CMain {
 					t0 = System.nanoTime();
 					track = graph.SalesmanTrackGreedy(visits);
 					t1 = System.nanoTime();
+					
+					track2.Read("Tests/TrackGreedy"+i+".txt");
 
 				} else if (algorihtm.toLowerCase().equals("backtracking")) {
 					System.gc();
@@ -326,7 +336,7 @@ public class CMain {
 					track = graph.SalesmanTrackBacktrackingGreedy(visits);
 					t1 = System.nanoTime();
 
-					track2.Read("Tests/TrackGreedy" + i + ".txt");
+					track2.Read("Tests/TrackOptimo" + i + ".txt");
 
 				} else if (algorihtm.toLowerCase().equals("branchandbound1")) {
 					System.gc();
@@ -351,16 +361,23 @@ public class CMain {
 				} 
 				int errors = 0;
 				errors = track.Compare(track2);
-				double lengthDiff = track2.Length() - track.Length();
-				System.out.println("Graph tested. Passed with " + errors + " errors. Total time:" + (t1 - t0) / 1e9 + " Length difference: " + lengthDiff +"\n\n");
-				if (errors == 0 || (track2.Length() >= track.Length())){
+				double t1length = track2.Length();
+				double t2length = track2.Length();
+				int t1int = (int) t1length;
+				int t2int = (int) t2length;
+				totalT+= (t1 - t0);
+				double lengthDiff = t2int - t1int;
+				System.out.println("Graph tested. Passed with " + errors + " errors. Total time:" + (t1 - t0) / 1e9 + " Length difference: " + lengthDiff +"\n");
+				System.out.println("Current Total Time: " + totalT / 1e9 +"\n\n");
+				
+				if (errors == 0 || (t1int != t2int)){
 					totalCorrectGraphs++;
 				}
 			} catch (Exception e) {
 				System.out.println("Caught exception: " + e.getMessage() + "\n");
 			}
 		}
-		System.out.println("Graphs matching test cases with " + algorihtm + ": " + totalCorrectGraphs + ". Total testcase graphs: 25.");
+		System.out.println("Graphs matching test cases with " + algorihtm + ": " + totalCorrectGraphs + ". Total testcase graphs: 25. Total time: " + totalT / 1e9);
 		
 	}
 	
@@ -479,6 +496,10 @@ public class CMain {
 						t0 = System.nanoTime();
 						track = graph.SalesmanTrackBacktrackingGreedy(visits);
 						t1 = System.nanoTime();
+						if (debug){
+							int i =23;
+							track2.Read("Tests/TrackOptimo" + i + ".txt");
+						}
 					} else if (algorihtm.toLowerCase().equals("branchandbound1")) {
 						System.gc();
 						t0 = System.nanoTime();
