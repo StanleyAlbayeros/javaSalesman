@@ -27,6 +27,8 @@ public class CTrack {
     m_Vertices = new LinkedList<CVertex>();
     m_solutionTrack = false;
   }
+  
+
 
   public void AddLast(double x, double y) throws Exception {
     CVertex v = m_Graph.GetVertex(x, y);

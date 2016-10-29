@@ -511,7 +511,7 @@ public class CMain {
             track = graph.SalesmanTrackBacktrackingGreedy(visits);
             t1 = System.nanoTime();
             if (debug) {
-              int i = 11;
+              int i = 5;
               track2.Read("Tests/TrackOptimo" + i + ".txt");
             }
           } else if (algorihtm.toLowerCase().equals("branchandbound1")) {
@@ -537,7 +537,7 @@ public class CMain {
           }
           System.out.println("Track: " + track);
           if (debug) {
-            System.out.println("Track " + track2);
+            System.out.println("Target track: \t" + track2);
           }
           System.out.println("Longitud: " + track.Length());
           if (debug) {
