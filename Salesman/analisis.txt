@@ -4,6 +4,97 @@ Albayeros Duarte
 1311996
 Eric
 Millan Rodriguez
-Fichero de grafo: Tests/Grafo23.txt
-Fichero de visitas: Tests/Visitas23.txt
-Algoritmo: backtrackinggreedy
+Testing graph 1 with backtrackinggreedy
+Caught exception: null
+
+Testing graph 2 with backtrackinggreedy
+Graph tested. Passed with 0 errors. Total time:0.001093156 Length difference: 0.0
+
+Current Total Time: 0.001093156
+
+
+Testing graph 3 with backtrackinggreedy
+Graph tested. Passed with 0 errors. Total time:4.76178E-4 Length difference: 0.0
+
+Current Total Time: 0.001569334
+
+
+Testing graph 4 with backtrackinggreedy
+Graph tested. Passed with 0 errors. Total time:7.05955E-4 Length difference: 0.0
+
+Current Total Time: 0.002275289
+
+
+Testing graph 5 with backtrackinggreedy
+Graph tested. Passed with 4 errors. Total time:0.003343023 Length difference: 0.0
+
+Current Total Time: 0.005618312
+
+
+Testing graph 6 with backtrackinggreedy
+Caught exception: Index: 17, Size: 17
+
+Testing graph 7 with backtrackinggreedy
+Caught exception: Index: 28, Size: 28
+
+Testing graph 8 with backtrackinggreedy
+Graph tested. Passed with 20 errors. Total time:0.143736773 Length difference: 0.0
+
+Current Total Time: 0.149355085
+
+
+Testing graph 9 with backtrackinggreedy
+Caught exception: Index: 26, Size: 26
+
+Testing graph 10 with backtrackinggreedy
+Caught exception: Index: 40, Size: 40
+
+Testing graph 11 with backtrackinggreedy
+Graph tested. Passed with 6 errors. Total time:7.14267E-4 Length difference: 0.0
+
+Current Total Time: 0.150069352
+
+
+Testing graph 12 with backtrackinggreedy
+Graph tested. Passed with 19 errors. Total time:0.004580401 Length difference: 0.0
+
+Current Total Time: 0.154649753
+
+
+Testing graph 13 with backtrackinggreedy
+Graph tested. Passed with 19 errors. Total time:0.042714716 Length difference: 0.0
+
+Current Total Time: 0.197364469
+
+
+Testing graph 14 with backtrackinggreedy
+Graph tested. Passed with 17 errors. Total time:0.185076246 Length difference: 0.0
+
+Current Total Time: 0.382440715
+
+
+Testing graph 15 with backtrackinggreedy
+Graph tested. Passed with 27 errors. Total time:4.773583584 Length difference: 0.0
+
+Current Total Time: 5.156024299
+
+
+Testing graph 16 with backtrackinggreedy
+Graph tested. Passed with 17 errors. Total time:0.009625734 Length difference: 0.0
+
+Current Total Time: 5.165650033
+
+
+Testing graph 17 with backtrackinggreedy
+Caught exception: Index: 20, Size: 20
+
+Testing graph 18 with backtrackinggreedy
+Caught exception: Index: 25, Size: 25
+
+Testing graph 19 with backtrackinggreedy
+Caught exception: Index: 27, Size: 27
+
+Testing graph 20 with backtrackinggreedy
+Caught exception: Index: 20, Size: 20
+
+Testing graph 21 with backtrackinggreedy
