@@ -9,7 +9,7 @@ public class CMain {
   static final boolean testDijkstra = false;
   static final boolean testDijkstraTests = false;
   static final boolean generateRandomDijkstra = false;
-  static final boolean autoAlgorithmTest = false;
+  static final boolean autoAlgorithmTest = true;
   static final boolean debug = false;
   /////////////////// debug variables///////////////////
 
@@ -81,11 +81,11 @@ public class CMain {
 
   // RamdomVisits ------------------------------------------------------------
   public static CVisits RandomVisits(CGraph g, int nVisits) throws Exception {
-    assert nVisits < g.m_listaVertex.size();
+    assert nVisits < g.m_Vertices.size();
     CVisits visits = new CVisits();
     while (nVisits > 0) {
-      int i = (int) (Math.random() * g.m_listaVertex.size());
-      CPoint p = g.m_listaVertex.get(i).m_Point;
+      int i = (int) (Math.random() * g.m_Vertices.size());
+      CPoint p = g.m_Vertices.get(i).m_Point;
       if (!visits.MemberP(p.m_X, p.m_Y)) {
         visits.Add(p.m_X, p.m_Y);
         --nVisits;
@@ -96,11 +96,11 @@ public class CMain {
 
   // CiclicRamdomVisits ------------------------------------------------------------
   public static CVisits CiclicRandomVisits(CGraph g, int nVisits) throws Exception {
-    assert nVisits < g.m_listaVertex.size();
+    assert nVisits < g.m_Vertices.size();
     CVisits visits = new CVisits();
     while (nVisits > 1) {
-      int i = (int) (Math.random() * g.m_listaVertex.size());
-      CPoint p = g.m_listaVertex.get(i).m_Point;
+      int i = (int) (Math.random() * g.m_Vertices.size());
+      CPoint p = g.m_Vertices.get(i).m_Point;
       if (!visits.MemberP(p.m_X, p.m_Y)) {
         visits.Add(p.m_X, p.m_Y);
         --nVisits;
@@ -193,14 +193,14 @@ public class CMain {
         // dijkstra
         System.gc();
         t0 = System.nanoTime();
-        graphTest.Dijkstra(graphTest.m_listaVertex.get(0));
+        graphTest.Dijkstra(graphTest.m_Vertices.get(0));
         t1 = System.nanoTime();
         errD1 = graphTest.CompareDijkstra(filenameDist.toString());
         double tempD1 = (t1 - t0) / 1e9;
         // dijkstraqueue
         System.gc();
         t2 = System.nanoTime();
-        graphTest.DijkstraQueue(graphTest.m_listaVertex.get(0));
+        graphTest.DijkstraQueue(graphTest.m_Vertices.get(0));
         t3 = System.nanoTime();
         errD1 = graphTest.CompareDijkstra(filenameDist.toString());
         double tempD2 = (t3 - t2) / 1e9;
@@ -258,7 +258,7 @@ public class CMain {
         System.out.println("\t\tStarting dijkstra on randomgraph " + j);
         System.gc();
         t0 = System.nanoTime();
-        graph.Dijkstra(graph.m_listaVertex.get(0));
+        graph.Dijkstra(graph.m_Vertices.get(0));
         t1 = System.nanoTime();
         double tempD1 = (t1 - t0) / 1e9;
 
@@ -266,7 +266,7 @@ public class CMain {
         System.out.println("\t\tStarting dijkstraqueue on randomgraph " + j);
         System.gc();
         t2 = System.nanoTime();
-        graph.DijkstraQueue(graph.m_listaVertex.get(0));
+        graph.DijkstraQueue(graph.m_Vertices.get(0));
         t3 = System.nanoTime();
         double tempD2 = (t3 - t2) / 1e9;
 
@@ -374,7 +374,10 @@ public class CMain {
         int t2int = (int) t2length;
         totalT += (t1 - t0);
         double lengthDiff = t2int - t1int;
-        System.out.println("Graph tested. Passed with " + errors + " errors. Total time:"
+
+        System.out.println("My track:\t" + track);
+        System.out.println("Test track:\t" + track2);
+        System.out.println("Graph "+ i + " tested. Completed with " + errors + " errors. Total time:"
             + (t1 - t0) / 1e9 + " Length difference: " + lengthDiff + "\n");
         System.out.println("Current Total Time: " + totalT / 1e9 + "\n\n");
 
@@ -445,12 +448,12 @@ public class CMain {
           if (algorihtm.toLowerCase().equals("dijkstra")) {
             System.gc();
             t0 = System.nanoTime();
-            graph.Dijkstra(graph.m_listaVertex.get(0));
+            graph.Dijkstra(graph.m_Vertices.get(0));
             t1 = System.nanoTime();
           } else if (algorihtm.toLowerCase().equals("dijkstraqueue")) {
             System.gc();
             t0 = System.nanoTime();
-            graph.DijkstraQueue(graph.m_listaVertex.get(0));
+            graph.DijkstraQueue(graph.m_Vertices.get(0));
             t1 = System.nanoTime();
           } else
             throw new Exception(algorihtm + " no es un algoritmo v�lido");
@@ -508,7 +511,7 @@ public class CMain {
             track = graph.SalesmanTrackBacktrackingGreedy(visits);
             t1 = System.nanoTime();
             if (debug) {
-              int i = 23;
+              int i = 11;
               track2.Read("Tests/TrackOptimo" + i + ".txt");
             }
           } else if (algorihtm.toLowerCase().equals("branchandbound1")) {

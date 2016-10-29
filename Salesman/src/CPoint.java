@@ -1,9 +1,16 @@
+import java.util.Iterator;
+
 public class CPoint {
   public double m_X, m_Y;
 
   public CPoint(double x, double y) {
     m_X = x;
     m_Y = y;
+  }
+  
+  public String toString(){
+    String str = "[" + m_X + "," + m_Y + ")" + "]";
+    return str;
   }
 
   public CPoint Neg() {
