@@ -9,7 +9,7 @@ public class CMain {
   static final boolean testDijkstra = false;
   static final boolean testDijkstraTests = false;
   static final boolean generateRandomDijkstra = false;
-  static final boolean autoAlgorithmTest = true;
+  static final boolean autoAlgorithmTest = false;
   static final boolean debug = false;
   /////////////////// debug variables///////////////////
 
@@ -270,9 +270,6 @@ public class CMain {
         t3 = System.nanoTime();
         double tempD2 = (t3 - t2) / 1e9;
 
-        // print
-        // System.out.println("Dijkstra " + j + " time: " + tempD1 + " DijkstraQueue " + j + " time:
-        // " + tempD2 + " Time difference: " + tempDiff);
         writer.println(numVertex + COMMA_DELIMITER + numEdges + COMMA_DELIMITER + tempD1
             + COMMA_DELIMITER + tempD2);
         System.out.println();
@@ -373,7 +370,7 @@ public class CMain {
         int t1int = (int) t1length;
         int t2int = (int) t2length;
         totalT += (t1 - t0);
-        double lengthDiff = t2int - t1int;
+        double lengthDiff = t2length - t1length;
 
         System.out.println("My track:\t" + track);
         System.out.println("Test track:\t" + track2);
@@ -381,7 +378,7 @@ public class CMain {
             + (t1 - t0) / 1e9 + " Length difference: " + lengthDiff + "\n");
         System.out.println("Current Total Time: " + totalT / 1e9 + "\n\n");
 
-        if (errors == 0 || (t1int != t2int)) {
+        if ((t1int == t2int)) {
           totalCorrectGraphs++;
         }
       } catch (Exception e) {

@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -44,6 +45,26 @@ public class CVisits {
   public LinkedList<CVertex> toCVertexList(CGraph graph) {
 
     LinkedList<CVertex> result = new LinkedList<CVertex>();
+
+    for (CPoint currentPoint : m_Points) {
+
+      try {
+        result.add(graph.GetVertex(currentPoint));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
+    return result;
+  }  /**
+   * Returns an ArrayList containing all the visits vertex
+   * 
+   * @param graph CGraph which contains the vertex, used to check if they are actually in it
+   * @return the resulting arraylist with all the vertex
+   */
+  public ArrayList<CVertex> toCVertexArrayList(CGraph graph) {
+
+    ArrayList<CVertex> result = new ArrayList<CVertex>(this.m_Points.size());
 
     for (CPoint currentPoint : m_Points) {
 

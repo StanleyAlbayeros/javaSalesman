@@ -1,1 +1,8 @@
-/CGraph.class
+/CBBNode.class
+/CBBbestPath.class
+/CBBbestTrack.class
+/CBBNodeComparator.class
+/CBBBestTrack.class
+/CTrackComparator.class
+/CVertexComparator.class
+/CBBNode2.class
