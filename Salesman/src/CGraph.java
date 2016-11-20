@@ -1027,6 +1027,7 @@ public class CGraph {
 				CBBBestTrack tempCBBBestTrack = new CBBBestTrack(tempTrack, visitsArrayLength);
 				bestTrackArray.set(i, tempCBBBestTrack);
 				i++;
+				
 			}			
 		}
 		
