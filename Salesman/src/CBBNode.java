@@ -50,7 +50,9 @@ public class CBBNode {
 			System.out.println(" | this node's length = " + nodeLength);
 			System.out.println(" | visited index list" + visitedIndexList.toString());
 		}
-		result.Append((bestTrack2DArray.get(0).get(visitedIndexList.get(0))).track);
+		result.Append((bestTrack2DArray.get(0).
+				get(visitedIndexList.get(0))).
+				track);
 		for (int j=1  ; j < visitedIndexList.size() ; j++){
 			if (debug) {
 				System.out.println(" i: " + visitedIndexList.get(i) + " j: " + visitedIndexList.get(j));
