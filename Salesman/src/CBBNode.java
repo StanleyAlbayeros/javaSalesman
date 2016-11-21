@@ -37,11 +37,11 @@ public class CBBNode {
 			notVisitedIndexList.add(i);
 		}
 		notVisitedIndexList.remove(visitsArrayLength-1);	
-		System.out.println("not visited index list = " + notVisitedIndexList.toString());
+//		System.out.println("not visited index list = " + notVisitedIndexList.toString());
 	}
 	
 	CTrack nodeToCTrack (CGraph graph, ArrayList<ArrayList<CBBBestTrack>> bestTrack2DArray, boolean debug, ArrayList<CVertex> visitsArray){
-		debug = true;
+//		debug = true;
 		CTrack result = new CTrack(graph);
 		int i=0;
 		if (debug) {

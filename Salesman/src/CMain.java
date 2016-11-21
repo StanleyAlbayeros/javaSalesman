@@ -9,7 +9,7 @@ public class CMain {
   static final boolean testDijkstra = false;
   static final boolean testDijkstraTests = false;
   static final boolean generateRandomDijkstra = false;
-  static final boolean autoAlgorithmTest = true;
+  static final boolean autoAlgorithmTest = false;
   static final boolean debug = false;
   /////////////////// debug variables///////////////////
 
