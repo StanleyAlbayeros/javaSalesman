@@ -1,9 +1,8 @@
 import java.awt.*;
+import java.util.List;
 import java.util.*;
 
 import java.io.*;
-// import java.util.Scanner;
-import java.lang.reflect.Array;
 
 public class CGraph {
 	public ArrayList<CVertex> m_Vertices;
@@ -1011,31 +1010,169 @@ public class CGraph {
 	// =====================================================================================
 	// SalesmanTrackBranchAndBound1
 	// ---------------------------------------------------------
+	CBBNode bestSolutionNode;
+
 	public CTrack SalesmanTrackBranchAndBound1(CVisits visits) throws Exception {
-		//converting the visits object to a navegable vertex visitsArray, since visits is just a points list
+		// converting the visits object to a navegable vertex visitsArray, since visits is just a
+		// points list
 		ArrayList<CVertex> visitsArray = visits.toCVertexArrayList(this);
-		final int visitsArrayLength = visitsArray.size();
+		int visitsArrayLength = visitsArray.size();
+		final int lastVertexIndex = visitsArrayLength - 1;
+		final int firstVertexIndex = 0;
+
+		// variables used for the verbose output
+		int branches = 0;
+		int prunes = 0;
+
+		// solution initialization
+		bestSolutionNode = new CBBNode();
+		bestLength = Double.MAX_VALUE;
 		
-		//getting every single shortest track between vertex pairs and saving them
-		// in the CBBBestrack internal arraylist for faster access
-		ArrayList<CBBBestTrack> bestTrackArray = new ArrayList<CBBBestTrack>(visitsArrayLength);		
-		for (CVertex originVertex : visitsArray){
-			DijkstraQueue(originVertex);
-			int i=0;
-			for (CVertex destinationVertex : visitsArray){
-				CTrack tempTrack = getDijkstraTrack(originVertex, destinationVertex);
-				CBBBestTrack tempCBBBestTrack = new CBBBestTrack(tempTrack, visitsArrayLength);
-				bestTrackArray.set(i, tempCBBBestTrack);
-				i++;
-				
-			}			
+		if (visitsArray.size() == 1) {
+			CTrack onlyOne = new CTrack(this);
+			onlyOne.AddFirst(visitsArray.get(0));
+			return onlyOne;
+		} else if (visitsArray.size() == 2){
+			CTrack temptrack = new CTrack(this);
+			temptrack.AddFirst(visitsArray.get(0));
+			temptrack.Append(getDijkstraTrack(visitsArray.get(0), visitsArray.get(1)));
+			return temptrack;
+		}
+
+		// getting every single shortest track between vertex pairs for faster access
+		ArrayList<ArrayList<CBBBestTrack>> bestTrack2DArray = new ArrayList<ArrayList<CBBBestTrack>>(visitsArrayLength);
+		
+		if (verbose) {
+			debugIndent = debugIndent + "|  ";
+			System.out.println(debugIndent + "array length = " + visitsArrayLength);
 		}
 		
-		//root node inicialization
-		
+		for (int k = 0; k < visitsArrayLength; k++) {
+			ArrayList<CBBBestTrack> tempList = new ArrayList<CBBBestTrack>(visitsArrayLength + 1);
+			bestTrack2DArray.add(tempList);
+		}
+
+		int i = 0;
+		for (CVertex originVertex : visitsArray) {
+			if (verbose) {
+				debugIndent = debugIndent + "|  ";
+				System.out.println(debugIndent + "outer init i = " + i);
+			}
+			DijkstraQueue(originVertex);
+			int j = 0;
+			ArrayList<CBBBestTrack> tempBestTrack2DArray = new ArrayList<>(visitsArrayLength);
+
+			for (CVertex destinationVertex : visitsArray) {
+				CTrack tempTrack = getDijkstraTrack(originVertex, destinationVertex);
+				CBBBestTrack tempCBBBestTrack = new CBBBestTrack(tempTrack);
+				tempBestTrack2DArray.add(tempCBBBestTrack);
+				if (verbose) {
+					debugIndent = debugIndent + "|  ";
+					System.out.println(debugIndent + "inner init j = " + j);
+				}
+				if (verbose) {
+					debugIndent = debugIndent.substring(3);
+				}
+				j++;
+			}
+
+			bestTrack2DArray.set(i, tempBestTrack2DArray);
+			i++;
+			if (verbose) {
+				debugIndent = debugIndent.substring(3);
+			}
+		}
+
+		visitsArray.remove(lastVertexIndex);
+		visitsArrayLength--;
+		// root node initialization
 		CBBNode rootNode = new CBBNode();
-		rootNode.vertexToVisit = new ArrayList<Integer>(visitsArrayLength);
-		
+		rootNode.initializeRootNode(visitsArray, visitsArrayLength, firstVertexIndex, this);
+
+		// Priority queue initialization
+		int maxPriorityQueueSize = visits.m_Points.size() * visits.m_Points.size();
+		PriorityQueue<CBBNode> solutionQueue = new PriorityQueue<CBBNode>(maxPriorityQueueSize, new CBBNodeComparator());
+		solutionQueue.add(rootNode);
+
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+		// main loop
+		debugIndent = "|  ";
+		while (!solutionQueue.isEmpty()) {
+			CBBNode currentNode = solutionQueue.poll();
+
+			if (verbose) {
+				branches++;
+				debugIndent = debugIndent + "|  ";
+				System.out.println(debugIndent + "Entering new branch. Total branches: " + branches);
+			}
+
+			for (Integer currentIndex : currentNode.notVisitedIndexList) {
+
+				if (verbose) {
+					debugIndent = debugIndent + "|  ";
+					System.out.println(debugIndent + "currentNode index = "
+							+ currentNode.originalIndex + ". currentIndex = " + currentIndex);
+				}
+
+				double currentLength;
+				CBBBestTrack trackFromCurrentNode =bestTrack2DArray.get(currentNode.originalIndex).get(currentIndex);
+				currentLength = currentNode.nodeLength + trackFromCurrentNode.pathLength;
+
+				if (currentLength < bestLength) {
+					CBBNode newNode = new CBBNode();
+
+					newNode.originalIndex = currentIndex;
+					newNode.nodeLength = currentLength;
+					
+					// heuristic
+					newNode.nodeWeight = currentLength;
+
+					newNode.visitedIndexList =(ArrayList<Integer>) currentNode.visitedIndexList.clone();
+					newNode.visitedIndexList.add(new Integer(newNode.originalIndex));
+					
+					
+					newNode.notVisitedIndexList =(ArrayList<Integer>) currentNode.notVisitedIndexList.clone();
+					newNode.notVisitedIndexList.remove(new Integer(newNode.originalIndex));
+
+					if (!newNode.notVisitedIndexList.isEmpty()) {
+						if (verbose) {
+							System.out.println(debugIndent + "Adding to solutionQueue");
+						}
+						solutionQueue.add(newNode);
+					} else {
+						if (verbose) {
+							System.out.println(
+									debugIndent + " VisitList empty, going to the last node.");
+						}
+						newNode.visitedIndexList.add(lastVertexIndex);
+						newNode.nodeLength = newNode.nodeLength + bestTrack2DArray.get(currentIndex).get(lastVertexIndex).pathLength;
+						if (newNode.nodeLength < bestLength) {
+							bestSolutionNode = newNode;
+							bestLength = newNode.nodeLength;
+						}
+					}
+					
+				}
+
+				prunes++;
+				if (verbose) {
+					debugIndent = debugIndent.substring(3);
+					System.out.println(debugIndent + "Pruning");
+				}
+
+			}
+
+			if (verbose) {
+				debugIndent = debugIndent.substring(3);
+			}
+		}
+		if (verbose) {
+			System.out
+					.println(debugIndent + " Finished main loop. Solution node visitedList length: "
+							+ bestSolutionNode.visitedIndexList.size() + " Solution node length: "
+							+ bestSolutionNode.nodeLength);
+		}
+		bestSolution = bestSolutionNode.nodeToCTrack(this, bestTrack2DArray, verbose, visitsArray);
 		
 		return bestSolution;
 	}
@@ -1043,9 +1180,190 @@ public class CGraph {
 	// SalesmanTrackBranchAndBound2
 	// -------------------------------------------------------------------
 	public CTrack SalesmanTrackBranchAndBound2(CVisits visits) throws Exception {
-		// IMPLEMENTAR LA FUNCION
-		throw new Exception("SalesmanTrackBranchAndBound2 no implementado");
+		// converting the visits object to a navegable vertex visitsArray, since visits is just a
+		// points list
+		ArrayList<CVertex> visitsArray = visits.toCVertexArrayList(this);
+		int visitsArrayLength = visitsArray.size();
+		final int lastVertexIndex = visitsArrayLength - 1;
+		final int firstVertexIndex = 0;
+
+		// variables used for the verbose output
+		int branches = 0;
+		int prunes = 0;
+
+		// solution initialization
+		bestSolutionNode = new CBBNode();
+		bestLength = Double.MAX_VALUE;
+		
+		if (visitsArray.size() == 1) {
+			CTrack onlyOne = new CTrack(this);
+			onlyOne.AddFirst(visitsArray.get(0));
+			return onlyOne;
+		} else if (visitsArray.size() == 2){
+			CTrack temptrack = new CTrack(this);
+			temptrack.AddFirst(visitsArray.get(0));
+			temptrack.Append(getDijkstraTrack(visitsArray.get(0), visitsArray.get(1)));
+			return temptrack;
+		}
+
+		// getting every single shortest track between vertex pairs for faster access
+		ArrayList<ArrayList<CBBBestTrack>> bestTrack2DArray = new ArrayList<ArrayList<CBBBestTrack>>(visitsArrayLength);
+		
+		if (verbose) {
+			debugIndent = debugIndent + "|  ";
+			System.out.println(debugIndent + "array length = " + visitsArrayLength);
+		}
+		
+		for (int k = 0; k < visitsArrayLength; k++) {
+			ArrayList<CBBBestTrack> tempList = new ArrayList<CBBBestTrack>(visitsArrayLength + 1);
+			bestTrack2DArray.add(tempList);
+		}
+
+		int i = 0;
+		for (CVertex originVertex : visitsArray) {
+			if (verbose) {
+				debugIndent = debugIndent + "|  ";
+				System.out.println(debugIndent + "outer init i = " + i);
+			}
+			DijkstraQueue(originVertex);
+			int j = 0;
+			ArrayList<CBBBestTrack> tempBestTrack2DArray = new ArrayList<>(visitsArrayLength);
+
+			for (CVertex destinationVertex : visitsArray) {
+				CTrack tempTrack = getDijkstraTrack(originVertex, destinationVertex);
+				CBBBestTrack tempCBBBestTrack = new CBBBestTrack(tempTrack);
+				tempBestTrack2DArray.add(tempCBBBestTrack);
+				if (verbose) {
+					debugIndent = debugIndent + "|  ";
+					System.out.println(debugIndent + "inner init j = " + j);
+				}
+				if (verbose) {
+					debugIndent = debugIndent.substring(3);
+				}
+				j++;
+			}
+
+			bestTrack2DArray.set(i, tempBestTrack2DArray);
+			i++;
+			if (verbose) {
+				debugIndent = debugIndent.substring(3);
+			}
+		}
+		
+		ArrayList<Double> bestLengthArray = new ArrayList<Double>(visitsArrayLength);
+		for (int m = 0; m<visitsArrayLength ; m++){
+			double currentLength = Double.MAX_VALUE;
+			for (int l = 0 ; l < visitsArrayLength ; l++){
+				double tempLength = bestTrack2DArray.get(m).get(l).pathLength;
+				if ((tempLength != 0) && (tempLength < currentLength)){
+						currentLength = tempLength;
+				}
+			}
+			bestLengthArray.add(currentLength);
+		}
+		
+		visitsArray.remove(lastVertexIndex);
+		visitsArrayLength--;		
+		
+		// root node initialization
+		CBBNode rootNode = new CBBNode();
+		rootNode.initializeRootNode(visitsArray, visitsArrayLength, firstVertexIndex, this);
+		
+		for (int m = 1; m <bestLengthArray.size() ; m++){
+			rootNode.nodeWeight = rootNode.nodeWeight + bestLengthArray.get(m).doubleValue();
+		}
+		
+		// Priority queue initialization
+		int maxPriorityQueueSize = visits.m_Points.size() * visits.m_Points.size();
+		PriorityQueue<CBBNode> solutionQueue = new PriorityQueue<CBBNode>(maxPriorityQueueSize, new CBBNodeComparator());
+		solutionQueue.add(rootNode);
+
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+		// main loop
+		debugIndent = "|  ";
+		while (!solutionQueue.isEmpty()) {
+			CBBNode currentNode = solutionQueue.poll();
+
+			if (verbose) {
+				branches++;
+				debugIndent = debugIndent + "|  ";
+				System.out.println(debugIndent + "Entering new branch. Total branches: " + branches);
+				System.out.println(debugIndent + "bestLength array size: " + bestLengthArray.size());
+			}
+
+			for (Integer currentIndex : currentNode.notVisitedIndexList) {
+
+				if (verbose) {
+					debugIndent = debugIndent + "|  ";
+					System.out.println(debugIndent + "currentNode index = "
+							+ currentNode.originalIndex + ". currentIndex = " + currentIndex);
+				}
+
+				double currentLength;
+				double currentWeight;
+				CBBBestTrack trackFromCurrentNode =bestTrack2DArray.get(currentNode.originalIndex).get(currentIndex);
+				currentLength = currentNode.nodeLength + trackFromCurrentNode.pathLength;
+				currentWeight = currentLength + currentNode.nodeWeight - currentNode.nodeLength - bestLengthArray.get(currentIndex).doubleValue();
+				
+				if (currentWeight < bestLength) {
+					CBBNode newNode = new CBBNode();
+
+					newNode.originalIndex = currentIndex;
+					newNode.nodeLength = currentLength;
+					
+					// heuristic
+					newNode.nodeWeight = currentWeight;
+
+					newNode.visitedIndexList =(ArrayList<Integer>) currentNode.visitedIndexList.clone();
+					newNode.visitedIndexList.add(new Integer(newNode.originalIndex));
+					
+					
+					newNode.notVisitedIndexList =(ArrayList<Integer>) currentNode.notVisitedIndexList.clone();
+					newNode.notVisitedIndexList.remove(new Integer(newNode.originalIndex));
+
+					if (!newNode.notVisitedIndexList.isEmpty()) {
+						if (verbose) {
+							System.out.println(debugIndent + "Adding to solutionQueue");
+						}
+						solutionQueue.add(newNode);
+					} else {
+						if (verbose) {
+							System.out.println(
+									debugIndent + " VisitList empty, going to the last node.");
+						}
+						newNode.visitedIndexList.add(lastVertexIndex);
+						newNode.nodeLength = newNode.nodeLength + bestTrack2DArray.get(currentIndex).get(lastVertexIndex).pathLength;
+						if (newNode.nodeLength < bestLength) {
+							bestSolutionNode = newNode;
+							bestLength = newNode.nodeLength;
+						}
+					}
+					
+				}
+
+				prunes++;
+				if (verbose) {
+					debugIndent = debugIndent.substring(3);
+					System.out.println(debugIndent + "Pruning");
+				}
+
+			}
+
+			if (verbose) {
+				debugIndent = debugIndent.substring(3);
+			}
+		}
+		if (verbose) {
+			System.out
+					.println(debugIndent + " Finished main loop. Solution node visitedList length: "
+							+ bestSolutionNode.visitedIndexList.size() + " Solution node length: "
+							+ bestSolutionNode.nodeLength);
+		}
+		bestSolution = bestSolutionNode.nodeToCTrack(this, bestTrack2DArray, verbose, visitsArray);
+		
+		return bestSolution;
 	}
+
 
 	// SalesmanTrackBranchAndBound3
 	// -------------------------------------------------------------------

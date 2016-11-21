@@ -9,7 +9,7 @@ public class CMain {
   static final boolean testDijkstra = false;
   static final boolean testDijkstraTests = false;
   static final boolean generateRandomDijkstra = false;
-  static final boolean autoAlgorithmTest = false;
+  static final boolean autoAlgorithmTest = true;
   static final boolean debug = false;
   /////////////////// debug variables///////////////////
 
@@ -347,16 +347,25 @@ public class CMain {
           t0 = System.nanoTime();
           track = graph.SalesmanTrackBranchAndBound1(visits);
           t1 = System.nanoTime();
+
+          track2.Read("Tests/TrackOptimo" + i + ".txt");
+          
         } else if (algorihtm.toLowerCase().equals("branchandbound2")) {
           System.gc();
           t0 = System.nanoTime();
           track = graph.SalesmanTrackBranchAndBound2(visits);
           t1 = System.nanoTime();
+
+          track2.Read("Tests/TrackOptimo" + i + ".txt");
+          
         } else if (algorihtm.toLowerCase().equals("branchandbound3")) {
           System.gc();
           t0 = System.nanoTime();
           track = graph.SalesmanTrackBranchAndBound3(visits);
           t1 = System.nanoTime();
+
+          track2.Read("Tests/TrackOptimo" + i + ".txt");
+          
         } else
           throw new Exception(algorihtm + " no es un algoritmo v�lido");
         if (drawGraph) {
@@ -364,8 +373,8 @@ public class CMain {
           m_View.ShowVisits(visits);
         }
         int errors = 0;
-        errors = track.Compare(track2);
-        double t1length = track2.Length();
+        //errors = track.Compare(track2);
+        double t1length = track.Length();
         double t2length = track2.Length();
         int t1int = (int) t1length;
         int t2int = (int) t2length;
@@ -382,7 +391,8 @@ public class CMain {
           totalCorrectGraphs++;
         }
       } catch (Exception e) {
-        System.out.println("Caught exception: " + e.getMessage() + "\n");
+          System.out.println("Caught exception: " + e.getMessage() + "\n");
+          e.printStackTrace();
       }
     }
     System.out.println("Graphs matching test cases with " + algorihtm + ": " + totalCorrectGraphs
@@ -508,7 +518,7 @@ public class CMain {
             track = graph.SalesmanTrackBacktrackingGreedy(visits);
             t1 = System.nanoTime();
             if (debug) {
-              int i = 5;
+              int i = 2;
               track2.Read("Tests/TrackOptimo" + i + ".txt");
             }
           } else if (algorihtm.toLowerCase().equals("branchandbound1")) {
@@ -516,11 +526,20 @@ public class CMain {
             t0 = System.nanoTime();
             track = graph.SalesmanTrackBranchAndBound1(visits);
             t1 = System.nanoTime();
+            if (debug) {
+                int i = 6;
+                track2.Read("Tests/TrackOptimo" + i + ".txt");
+              }
           } else if (algorihtm.toLowerCase().equals("branchandbound2")) {
             System.gc();
             t0 = System.nanoTime();
             track = graph.SalesmanTrackBranchAndBound2(visits);
             t1 = System.nanoTime();
+            if (debug) {
+                int i = 5;
+                track2.Read("Tests/TrackOptimo" + i + ".txt");
+              }
+            
           } else if (algorihtm.toLowerCase().equals("branchandbound3")) {
             System.gc();
             t0 = System.nanoTime();
