@@ -1,0 +1,138 @@
+// =====================================================================================
+	// SalesmanTrackBranchAndBound4 ========================================================
+	// =====================================================================================
+	// =====================================================================================
+	public CTrack SalesmanTrackBranchAndBound4(CVisits visits) throws Exception {
+		CTrack track = new CTrack(this);
+		PriorityQueue<CTrack> queue = new PriorityQueue<CTrack>();
+		CVertex origin = GetVertex(visits.m_Points.getFirst());
+		track.AddFirst(origin);
+		queue.add(track);
+
+		CTrack trackfinal = new CTrack(this);
+
+		while (!queue.isEmpty()) {
+			CTrack t = queue.poll();
+
+			if (hasAllVisits(visits, t)) {
+
+				CVisits cv = new CVisits();
+
+
+				cv.Add(t.m_Vertices.getFirst().m_Point.m_X, t.m_Vertices.getFirst().m_Point.m_Y);
+
+
+				t = pathVisit(cv, t);
+				t = trackMinimDist(t, trackfinal);
+				trackfinal.m_Vertices = (LinkedList<CVertex>) t.m_Vertices.clone();
+			} else {
+				for (int i = 0; i < visits.m_Points.size(); i++) {
+					CTrack track_aux = new CTrack(this);
+					track_aux.m_Vertices = (LinkedList<CVertex>) t.m_Vertices.clone();
+
+					if (onTrack(new CVertex(visits.m_Points.get(i).m_X, visits.m_Points.get(i).m_Y),
+							track_aux) == false) {
+
+						CVisits cv = new CVisits();
+						cv.Add(visits.m_Points.get(i).m_X, visits.m_Points.get(i).m_Y);
+
+						track_aux = pathVisit(cv, track_aux);
+						if (trackfinal.m_Vertices.isEmpty()
+								|| track_aux.Length() < trackfinal.Length()) {
+							queue.add(track_aux);
+						}
+					}
+				}
+			}
+		}
+		return trackfinal;
+	}
+
+	private boolean onTrack(CVertex v, CTrack track) {
+		// TODO Auto-generated method stub
+		for (int i = 0; i < track.m_Vertices.size(); i++) {
+			if (v.m_Point.m_X == track.m_Vertices.get(i).m_Point.m_X
+					&& v.m_Point.m_Y == track.m_Vertices.get(i).m_Point.m_Y) {
+				return true;
+			}
+
+		}
+		return false;
+	}
+
+	public double distancia(CVertex a, CVertex b) {
+		double dist = Math.sqrt(Math.pow((a.m_Point.m_X - b.m_Point.m_X), 2)
+				+ Math.pow((a.m_Point.m_Y - b.m_Point.m_Y), 2));
+		return dist;
+	}
+
+	private CTrack trackMinimDist(CTrack track, CTrack trackOptim) {
+		// TODO Auto-generated method stub
+		int distTrack = 0;
+		int distTrackOptim = 0;
+
+		if (trackOptim.m_Vertices.size() < 3) {
+			return track;
+		}
+
+		for (int i = 1; i < track.m_Vertices.size(); i++) {
+
+			distTrack += distancia(track.m_Vertices.get(i), track.m_Vertices.get(i - 1));
+		}
+
+		for (int i = 1; i < trackOptim.m_Vertices.size(); i++) {
+
+			distTrackOptim +=
+					distancia(trackOptim.m_Vertices.get(i), trackOptim.m_Vertices.get(i - 1));
+		}
+		if (distTrack <= distTrackOptim) {
+			return track;
+		} else {
+			return trackOptim;
+		}
+
+	}
+
+	public CTrack pathVisit(CVisits visits, CTrack track) throws Exception {
+
+
+		CVertex vertex = track.m_Vertices.getLast();
+		CPoint inici = visits.m_Points.getLast();
+		CVertex aux = new CVertex(-1, -1);
+		double dtemp = 9999;
+		do {
+			DijkstraQueue(GetVertex(inici));
+			dtemp = 9999;
+			for (Iterator<CVertex> iter = vertex.m_Neighbors.iterator(); iter.hasNext();) {
+				CVertex vertex_Neighbords = iter.next();
+
+
+				if (vertex_Neighbords.m_DijkstraDistance < dtemp) {
+					dtemp = vertex_Neighbords.m_DijkstraDistance;
+					aux = vertex_Neighbords;
+				}
+			}
+			vertex = aux;
+			// System.out.println("VERTEX MES PROPER = "+v.m_Point.m_X+"|"+v.m_Point.m_Y+" Distance:
+			// "+v.m_Distance+"\n");
+
+			track.AddLast(vertex);
+		} while ((vertex.m_Point.m_X == inici.m_X && vertex.m_Point.m_Y == inici.m_Y) == false);
+
+		return track;
+
+
+	}
+
+	private boolean hasAllVisits(CVisits v, CTrack t) throws Exception {
+		LinkedList<CPoint> visits = ((LinkedList<CPoint>) v.m_Points.clone());
+		int i = 0;
+		while (i < visits.size() && !visits.isEmpty()) {
+			int index = t.m_Vertices.indexOf(this.GetVertex(visits.get(i)));
+			if (index > -1)
+				visits.remove(i);
+			else
+				i++;
+		}
+		return visits.isEmpty();
+	}

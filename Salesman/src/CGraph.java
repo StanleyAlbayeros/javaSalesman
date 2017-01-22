@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.util.List;
 import java.util.*;
 
 import java.io.*;
@@ -1022,8 +1021,6 @@ public class CGraph {
 
 		// variables used for the verbose output
 		int branches = 0;
-		int prunes = 0;
-
 		// solution initialization
 		bestSolutionNode = new CBBNode();
 		bestLength = Double.MAX_VALUE;
@@ -1154,7 +1151,6 @@ public class CGraph {
 					
 				}
 
-				prunes++;
 				if (verbose) {
 					debugIndent = debugIndent.substring(3);
 					System.out.println(debugIndent + "Pruning");
@@ -1189,8 +1185,6 @@ public class CGraph {
 
 		// variables used for the verbose output
 		int branches = 0;
-		int prunes = 0;
-
 		// solution initialization
 		bestSolutionNode = new CBBNode();
 		bestLength = Double.MAX_VALUE;
@@ -1341,7 +1335,6 @@ public class CGraph {
 					
 				}
 
-				prunes++;
 				if (verbose) {
 					debugIndent = debugIndent.substring(3);
 					System.out.println(debugIndent + "Pruning");
@@ -1376,8 +1369,6 @@ public class CGraph {
 
 		// variables used for the verbose output
 		int branches = 0;
-		int prunes = 0;
-
 		// solution initialization
 		bestSolutionNode = new CBBNode();
 		bestLength = Double.MAX_VALUE;
@@ -1537,7 +1528,6 @@ public class CGraph {
 					
 				}
 
-				prunes++;
 				if (verbose) {
 					debugIndent = debugIndent.substring(3);
 					System.out.println(debugIndent + "Pruning");
